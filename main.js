@@ -9,13 +9,9 @@ function emit() {
   function drawFrame(t) {
     requestAnimationFrame(drawFrame);
 
-    signal = {
-      r: (Math.sin(t / 99 / 2) + 1) / 2,
-      g: (Math.sin(t / 99 / 3) + 1) / 2,
-      b: (Math.sin(t / 99 / 5) + 1) / 2
-    };
+    signal = (Math.sin(t / 99 / 2) + 1) / 2;
 
-    outputCtx.fillStyle = `rgb(${signal.r * 256}, ${signal.g * 256}, ${signal.b * 256})`;
+    outputCtx.fillStyle = `hsl(0, 0%, ${signal * 100}%)`;
     outputCtx.fillRect(0, 0, output.width, output.height);
   }
 
@@ -27,12 +23,14 @@ function process(video) {
   preview.height = preview.clientHeight;
 
   const previewCtx = preview.getContext('2d');
+  previewCtx.filter = 'grayscale(100%)';
 
   const pixel = document.createElement('canvas');
   pixel.width = 1;
   pixel.height = 1;
 
   const pixelCtx = pixel.getContext('2d');
+  pixelCtx.filter = 'grayscale(100%)';
 
   graph.width = graph.clientWidth;
   graph.height = graph.clientHeight;
@@ -46,31 +44,16 @@ function process(video) {
     previewCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, preview.width, preview.height);
     pixelCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, 1, 1);
 
-    const [r, g, b] = pixelCtx.getImageData(0, 0, 1, 1).data;
-    const capture = {
-      r: r / 255,
-      g: g / 255,
-      b: b / 255
-    };
+    const capture = pixelCtx.getImageData(0, 0, 1, 1).data[0] / 255;
 
     graphCtx.drawImage(graph, -1, 0);
 
-    graphCtx.fillStyle = '#000';
+    graphCtx.fillStyle = '#111';
     graphCtx.fillRect(graph.width - 1, 0, 1, graph.height);
 
-    graphCtx.fillStyle = '#f00';
-    graphCtx.fillRect(graph.width - 1, signal.r * graph.height / 2, 1, 1);
-    graphCtx.fillStyle = '#0f0';
-    graphCtx.fillRect(graph.width - 1, signal.g * graph.height / 2, 1, 1);
-    graphCtx.fillStyle = '#00f';
-    graphCtx.fillRect(graph.width - 1, signal.b * graph.height / 2, 1, 1);
-
-    graphCtx.fillStyle = '#f00';
-    graphCtx.fillRect(graph.width - 1, (capture.r + 1) * graph.height / 2, 1, 1);
-    graphCtx.fillStyle = '#0f0';
-    graphCtx.fillRect(graph.width - 1, (capture.g + 1) * graph.height / 2, 1, 1);
-    graphCtx.fillStyle = '#00f';
-    graphCtx.fillRect(graph.width - 1, (capture.b + 1) * graph.height / 2, 1, 1);
+    graphCtx.fillStyle = '#eee';
+    graphCtx.fillRect(graph.width - 1, signal * graph.height / 2, 1, 2);
+    graphCtx.fillRect(graph.width - 1, (capture + 1) * graph.height / 2, 1, 2);
   }
 
   requestAnimationFrame(grabFrame);

@@ -1,3 +1,4 @@
+let i = 0;
 let signal = {};
 
 function emit() {
@@ -9,7 +10,23 @@ function emit() {
   function drawFrame(t) {
     requestAnimationFrame(drawFrame);
 
-    signal = (Math.sin(t / 99 / 2) + 1) / 2;
+    const s = t / 1000;
+    const cF = 5;
+    const mF = 0.5;
+
+    if (i < 60) {
+      signal = 0.5;
+    } else {
+      const carrier = Math.sin(Math.PI * 2 * cF * s);
+      const modulation = Math.sin(Math.PI * 2 * mF * s);
+      signal = (carrier * (1 + modulation) / 2 + 1) / 2;
+    }
+
+    i++;
+
+    if (i >= 600) {
+      i = 0;
+    }
 
     outputCtx.fillStyle = `hsl(0, 0%, ${signal * 100}%)`;
     outputCtx.fillRect(0, 0, output.width, output.height);

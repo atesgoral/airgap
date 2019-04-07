@@ -55,13 +55,36 @@ function process(video) {
   const graphCtx = graph.getContext('2d');
   graphCtx.fillRect(0, 0, graph.width, graph.height);
 
-  function grabFrame() {
+  const cF = 5;
+  const fps = 60;
+  // const samples = fps / cF | 0;
+  // const win = Array(samples).fill(0);
+  let min = Infinity;
+  let max = 0;
+
+  let epoch = null;
+
+  function grabFrame(t) {
     requestAnimationFrame(grabFrame);
+
+    if (epoch === null) {
+      epoch = t;
+    }
+
+    const elapsed = t - epoch;
+    const s = elapsed / 1000;
 
     previewCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, preview.width, preview.height);
     pixelCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, 1, 1);
 
     const capture = pixelCtx.getImageData(0, 0, 1, 1).data[0] / 255;
+
+    // const i = s % samples | 0;
+    // sum -= win[i];
+    // win[i] = capture;
+    // sum += capture;
+
+    // const avg = sum / samples;
 
     graphCtx.drawImage(graph, -1, 0);
 

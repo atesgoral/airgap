@@ -1,6 +1,3 @@
-let i = 0;
-let signal = {};
-
 function emit() {
   output.width = output.clientWidth;
   output.height = output.clientHeight;
@@ -11,22 +8,8 @@ function emit() {
     requestAnimationFrame(drawFrame);
 
     const s = t / 1000;
-    const cF = 5;
-    const mF = 0.5;
 
-    if (i < 60) {
-      signal = 0.5;
-    } else {
-      const carrier = Math.sin(Math.PI * 2 * cF * s);
-      const modulation = Math.sin(Math.PI * 2 * mF * s);
-      signal = (carrier * (1 + modulation) / 2 + 1) / 2;
-    }
-
-    i++;
-
-    if (i >= 600) {
-      i = 0;
-    }
+    signal = Math.abs((s % 1) * 2 - 1);
 
     outputCtx.fillStyle = `hsl(0, 0%, ${signal * 100}%)`;
     outputCtx.fillRect(0, 0, output.width, output.height);
@@ -55,48 +38,48 @@ function process(video) {
   const graphCtx = graph.getContext('2d');
   graphCtx.fillRect(0, 0, graph.width, graph.height);
 
-  const cF = 5;
-  const fps = 60;
-  // const samples = fps / cF | 0;
-  // const win = Array(samples).fill(0);
   let min = Infinity;
   let max = 0;
 
-  let epoch = null;
-
   function grabFrame(t) {
     requestAnimationFrame(grabFrame);
-
-    if (epoch === null) {
-      epoch = t;
-    }
-
-    const elapsed = t - epoch;
-    const s = elapsed / 1000;
 
     previewCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, preview.width, preview.height);
     pixelCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, 1, 1);
 
     const capture = pixelCtx.getImageData(0, 0, 1, 1).data[0] / 255;
 
-    // const i = s % samples | 0;
-    // sum -= win[i];
-    // win[i] = capture;
-    // sum += capture;
-
-    // const avg = sum / samples;
+    min = Math.min(min, capture);
+    max = Math.max(max, capture);
 
     graphCtx.drawImage(graph, -1, 0);
 
     graphCtx.fillStyle = '#111';
     graphCtx.fillRect(graph.width - 1, 0, 1, graph.height);
 
+    graphCtx.fillStyle = '#f00';
+    graphCtx.fillRect(graph.width - 1, (2 - max) * graph.height / 2, 1, 2);
+    graphCtx.fillStyle = '#08f';
+    graphCtx.fillRect(graph.width - 1, (2 - min) * graph.height / 2, 1, 2);
+
+
+    graphCtx.fillStyle = '#888';
+    graphCtx.fillRect(graph.width - 1, (1 - signal) * graph.height / 2, 1, 2);
+    graphCtx.fillRect(graph.width - 1, (2 - capture) * graph.height / 2, 1, 2);
+
+    const range = max - min;
+    const normalized = (capture - min) / range + min;
+
     graphCtx.fillStyle = '#eee';
-    graphCtx.fillRect(graph.width - 1, signal * graph.height / 2, 1, 2);
-    graphCtx.fillRect(graph.width - 1, (capture + 1) * graph.height / 2, 1, 2);
+    graphCtx.fillRect(graph.width - 1, (2 - normalized) * graph.height / 2, 1, 2);
   }
 
   requestAnimationFrame(grabFrame);
+
+  setInterval(() => {
+    min = Infinity;
+    max = 0;
+  }, 5 * 1000);
 }
 
 async function init() {

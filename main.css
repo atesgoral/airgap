@@ -37,17 +37,17 @@ body {
   bottom: 200px;
   left: 0px;
   margin: 10px;
-  width: 512px;
-  height: 512px;
+  width: 256px;
+  height: 256px;
   border: 1px solid #222;
 }
 #output {
   position: absolute;
   bottom: 200px;
-  left: calc(512px + 10px);
+  left: calc(256px + 10px);
   margin: 10px;
-  width: 512px;
-  height: 512px;
+  width: 256px;
+  height: 256px;
   border: 1px solid #222;
 }
 #buttons {

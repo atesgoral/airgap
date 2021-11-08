@@ -314,9 +314,7 @@ async function init() {
     const iterator = true
       ? scanlineIterator
       : serpentineIterator;
-    const imageUrl = true
-      ? 'img_600x600_3x8bit_RGB_color_SMPTE_RP_219_2002.png'
-      : 'kodim23.png';
+    const imageUrl = 'patterns/640px-Sweden_TV1_colour_1969.png';
 
     const imageSignal = await loadImage(imageUrl, iterator);
     outputRenderer.init(output, iterator);

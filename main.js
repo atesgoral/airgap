@@ -233,12 +233,27 @@ async function loadImage(url) {
 
       const inputCtx = input.getContext('2d');
 
-      function pasteImage() {
-        inputCtx.drawImage(
-          image,
-          0, 0, image.width, image.height,
-          0, 0, input.width, input.height
-        );
+      const imageAspect = image.width / image.height;
+      const inputAspect = input.width / input.height;
+
+      if (imageAspect >= inputAspect) {
+        const overflowWidth = input.height * image.width / image.height;
+
+        function pasteImage() {
+          inputCtx.drawImage(
+            image,
+            (input.width - overflowWidth) / 2, 0, overflowWidth, input.height
+          );
+        }
+      } else {
+        const overflowHeight = input.width * image.height / image.width;
+
+        function pasteImage() {
+          inputCtx.drawImage(
+            image,
+            0, (input.height - overflowHeight) / 2, input.width, overflowHeight
+          );
+        }
       }
 
       pasteImage();
@@ -281,7 +296,8 @@ async function init() {
   video.srcObject = mediaStream;
 
   transmit.addEventListener('click', async () => {
-    const imageSignal = await loadImage('kodim23.png');
+    // const imageSignal = await loadImage('kodim23.png');
+    const imageSignal = await loadImage('img_600x600_3x8bit_RGB_color_SMPTE_RP_219_2002.png');
 
     calibration.reset();
 

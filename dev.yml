@@ -1,0 +1,6 @@
+name: airgap
+type: node
+up:
+  - node:
+      version: 16.13.0
+      yarn: 1.22.15

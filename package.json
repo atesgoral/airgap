@@ -1,0 +1,13 @@
+{
+  "name": "airgap",
+  "version": "0.0.0",
+  "description": "True analog glitching by transmitting pixel data through air",
+  "main": "index.html",
+  "repository": "https://github.com/atesgoral/airgap.git",
+  "author": "Ates Goral <ates@magnetiq.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "serve": "^13.0.2"
+  }
+}

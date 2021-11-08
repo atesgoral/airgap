@@ -164,10 +164,21 @@ function process(video) {
     graphCtx.fillStyle = '#00f';
     graphCtx.fillRect(graph.width - 1, (2 - normalized.b) * graph.height / 2, 1, 1);
 
-    // graphCtx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-    // graphCtx.fillRect(graph.width - 1, (2 - calibration.max) * graph.height / 2, 1, 1);
-    // graphCtx.fillStyle = 'rgba(0, 127, 255, 0.5)';
-    // graphCtx.fillRect(graph.width - 1, (2 - calibration.min) * graph.height / 2, 1, 1);
+    graphCtx.fillStyle = 'rgba(255, 0, 0, 1)';
+    graphCtx.fillRect(
+      0, (2 - calibration.max.r) * graph.height / 2,
+      3, (calibration.max.r - calibration.min.r) * graph.height / 2
+    );
+    graphCtx.fillStyle = 'rgba(0, 255, 0, 1)';
+    graphCtx.fillRect(
+      3, (2 - calibration.max.g) * graph.height / 2,
+      3, (calibration.max.g - calibration.min.g) * graph.height / 2
+    );
+    graphCtx.fillStyle = 'rgba(0, 0, 255, 1)';
+    graphCtx.fillRect(
+      6, (2 - calibration.max.b) * graph.height / 2,
+      3, (calibration.max.b - calibration.min.b) * graph.height / 2
+    );
   }
 
   requestAnimationFrame(nextFrame);

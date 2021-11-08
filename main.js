@@ -46,7 +46,7 @@ const calibration = {
 };
 
 const outputRenderer = {
-  init(output) {
+  init(output, iterator) {
     output.width = output.clientWidth;
     output.height = output.clientHeight;
 
@@ -61,8 +61,7 @@ const outputRenderer = {
     this.offscreen = offscreen;
     this.offscreenCtx = offscreen.getContext('2d');
 
-    // this.it = scanlineIterator(output.width, output.height);
-    this.it = serpentineIterator(output.width, output.height);
+    this.it = iterator(output.width, output.height);
   },
   render(color) {
     if (!this.it) {
@@ -124,8 +123,8 @@ function process(video) {
       return;
     }
 
-    const signal = signals[0];
-    const {value: original, done} = signal?.next();
+    const {signal, isCalibrating} = signals[0];
+    const {value: original, done} = signal.next();
 
     if (done) {
       signals.shift();
@@ -151,11 +150,15 @@ function process(video) {
       b: data[2] / 255
     };
 
-    calibration.train(sample);
+    if (isCalibrating) {
+      calibration.train(sample);
+    }
 
     const normalized = calibration.normalize(sample);
 
-    outputRenderer.render(sample);
+    if (!isCalibrating) {
+      outputRenderer.render(sample);
+    }
 
     graphCtx.drawImage(graph, -1, 0);
 
@@ -208,9 +211,8 @@ function *calibrationSignal(seconds) {
   }
 }
 
-function *imageSignal(imageData, updatePosition) {
-  // const it = scanlineIterator(imageData.width, imageData.height);
-  const it = serpentineIterator(imageData.width, imageData.height);
+function *imageSignal(imageData, iterator, updatePosition) {
+  const it = iterator(imageData.width, imageData.height);
 
   for (let pos of it) {
     updatePosition(pos.x, pos.y);
@@ -236,7 +238,7 @@ function *delay(seconds) {
   }
 }
 
-async function loadImage(url) {
+async function loadImage(url, iterator) {
   const image = new Image();
 
   return new Promise((resolve) => {
@@ -275,7 +277,7 @@ async function loadImage(url) {
         0, 0, input.width, input.height
       );
 
-      resolve(imageSignal(imageData, (x, y) => {
+      resolve(imageSignal(imageData, iterator, (x, y) => {
         pasteImage();
 
         if (x === undefined) {
@@ -309,18 +311,23 @@ async function init() {
   video.srcObject = mediaStream;
 
   transmit.addEventListener('click', async () => {
-    // const imageSignal = await loadImage('kodim23.png');
-    const imageSignal = await loadImage('img_600x600_3x8bit_RGB_color_SMPTE_RP_219_2002.png');
+    const iterator = true
+      ? scanlineIterator
+      : serpentineIterator;
+    const imageUrl = true
+      ? 'img_600x600_3x8bit_RGB_color_SMPTE_RP_219_2002.png'
+      : 'kodim23.png';
+
+    const imageSignal = await loadImage(imageUrl, iterator);
+    outputRenderer.init(output, iterator);
 
     calibration.reset();
 
     signals = [];
 
-    signals.push(calibrationSignal(5));
-    signals.push(delay(0.5));
-    signals.push(imageSignal);
-
-    outputRenderer.init(output);
+    signals.push({signal: calibrationSignal(5), isCalibrating: true});
+    // signals.push({signal: delay(0.5)});
+    signals.push({signal: imageSignal});
   });
 
   process(video);

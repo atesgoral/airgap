@@ -8,6 +8,17 @@ function *scanlineIterator(width, height) {
   }
 }
 
+function *serpentineIterator(width, height) {
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      yield {
+        x: y & 1 ? width - 1 - x : x,
+        y
+      };
+    }
+  }
+}
+
 const calibration = {
   reset() {
     this.min = {r: Infinity, g: Infinity, b: Infinity};
@@ -50,7 +61,8 @@ const outputRenderer = {
     this.offscreen = offscreen;
     this.offscreenCtx = offscreen.getContext('2d');
 
-    this.it = scanlineIterator(output.width, output.height);
+    // this.it = scanlineIterator(output.width, output.height);
+    this.it = serpentineIterator(output.width, output.height);
   },
   render(color) {
     if (!this.it) {
@@ -197,7 +209,8 @@ function *calibrationSignal(seconds) {
 }
 
 function *imageSignal(imageData, updatePosition) {
-  const it = scanlineIterator(imageData.width, imageData.height);
+  // const it = scanlineIterator(imageData.width, imageData.height);
+  const it = serpentineIterator(imageData.width, imageData.height);
 
   for (let pos of it) {
     updatePosition(pos.x, pos.y);

@@ -8,20 +8,21 @@ body {
   background: #000;
 }
 #emitter {
-  width: 100px;
-  height: 100px;
+  width: 300px;
+  height: 300px;
   position: absolute;
   margin: 0 auto;
   left: 50%;
-  margin-left: -25px;
+  margin-left: -150px;
 }
 #graph {
   background: #222;
   position: absolute;
   width: 100%;
-  height: 200px;
-  bottom: 0;
+  height: 220px;
+  bottom: 10px;
   border-top: 1px solid #222;
+  border-bottom: 1px solid #222;
 }
 #camera {
   width: 100px;
@@ -43,7 +44,7 @@ body {
 }
 #input {
   position: absolute;
-  bottom: 200px;
+  bottom: 230px;
   left: 0px;
   margin: 10px;
   width: 256px;
@@ -52,7 +53,7 @@ body {
 }
 #output {
   position: absolute;
-  bottom: 200px;
+  bottom: 230px;
   left: calc(256px + 10px);
   margin: 10px;
   width: 256px;

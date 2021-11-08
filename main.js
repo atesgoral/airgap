@@ -19,6 +19,10 @@ function *serpentineIterator(width, height) {
   }
 }
 
+function clamp(v) {
+  return Math.max(0, Math.min(1, v));
+}
+
 const calibration = {
   reset() {
     this.min = {r: Infinity, g: Infinity, b: Infinity};
@@ -38,9 +42,9 @@ const calibration = {
   },
   normalize(color) {
     return {
-      r: (color.r - this.min.r) / (this.max.r - this.min.r) + this.min.r,
-      g: (color.g - this.min.g) / (this.max.g - this.min.g) + this.min.g,
-      b: (color.b - this.min.b) / (this.max.b - this.min.b) + this.min.b
+      r: clamp((color.r - this.min.r) / (this.max.r - this.min.r) + this.min.r),
+      g: clamp((color.g - this.min.g) / (this.max.g - this.min.g) + this.min.g),
+      b: clamp((color.b - this.min.b) / (this.max.b - this.min.b) + this.min.b)
     };
   }
 };
@@ -75,10 +79,13 @@ const outputRenderer = {
       return;
     }
 
-    this.offscreenCtx.fillStyle = `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255})`;
+    const outputRgb = `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255})`;
+    this.offscreenCtx.fillStyle = outputRgb;
     this.offscreenCtx.fillRect(pos.x, pos.y, 1, 1);
 
     this.outputCtx.drawImage(this.offscreen, 0, 0);
+
+    return outputRgb;
   }
 };
 
@@ -130,16 +137,30 @@ function process(video) {
       return;
     }
 
+    graphCtx.globalCompositeOperation = 'source-over';
+
+    graphCtx.drawImage(graph, -1, 0);
+
+    graphCtx.fillStyle = '#000';
+    graphCtx.fillRect(graph.width - 1, 0, 1, graph.height);
+
+    graphCtx.globalCompositeOperation = 'lighter';
+
     if (original !== null) {
-      emitterCtx.fillStyle = `rgb(${original.r * 255}, ${original.g * 255}, ${original.b * 255})`;
+      const originalRgb = `rgb(${original.r * 255}, ${original.g * 255}, ${original.b * 255})`;
+
+      emitterCtx.fillStyle = originalRgb;
       emitterCtx.fillRect(0, 0, emitter.width, emitter.height);
 
+      graphCtx.fillStyle = originalRgb;
+      graphCtx.fillRect(graph.width - 1, 0, 1, 10);
+
       graphCtx.fillStyle = '#f00';
-      graphCtx.fillRect(graph.width - 1, (1 - original.r) * graph.height / 2, 1, 1);
+      graphCtx.fillRect(graph.width - 1, (1 - original.r) * graph.height / 2 + 10, 1, 1);
       graphCtx.fillStyle = '#0f0';
-      graphCtx.fillRect(graph.width - 1, (1 - original.g) * graph.height / 2, 1, 1);
+      graphCtx.fillRect(graph.width - 1, (1 - original.g) * graph.height / 2 + 10, 1, 1);
       graphCtx.fillStyle = '#00f';
-      graphCtx.fillRect(graph.width - 1, (1 - original.b) * graph.height / 2, 1, 1);
+      graphCtx.fillRect(graph.width - 1, (1 - original.b) * graph.height / 2 + 10, 1, 1);
     }
 
     const data = pixelCtx.getImageData(0, 0, 1, 1).data;
@@ -156,43 +177,41 @@ function process(video) {
     const normalized = calibration.normalize(sample);
 
     if (!isCalibrating) {
-      outputRenderer.render(sample);
+      const outputRgb = outputRenderer.render(sample);
+
+      graphCtx.fillStyle = outputRgb;
+      graphCtx.fillRect(graph.width - 1, graph.height / 2, 1, 10);
     }
 
-    graphCtx.drawImage(graph, -1, 0);
-
-    graphCtx.fillStyle = '#111';
-    graphCtx.fillRect(graph.width - 1, 0, 1, graph.height);
-
     graphCtx.fillStyle = '#800';
-    graphCtx.fillRect(graph.width - 1, (2 - sample.r) * graph.height / 2, 1, 1);
+    graphCtx.fillRect(graph.width - 1, (2 - sample.r) * graph.height / 2 + 20, 1, 1);
     graphCtx.fillStyle = '#080';
-    graphCtx.fillRect(graph.width - 1, (2 - sample.g) * graph.height / 2, 1, 1);
+    graphCtx.fillRect(graph.width - 1, (2 - sample.g) * graph.height / 2 + 20, 1, 1);
     graphCtx.fillStyle = '#008';
-    graphCtx.fillRect(graph.width - 1, (2 - sample.b) * graph.height / 2, 1, 1);
+    graphCtx.fillRect(graph.width - 1, (2 - sample.b) * graph.height / 2 + 20, 1, 1);
 
     graphCtx.fillStyle = '#f00';
-    graphCtx.fillRect(graph.width - 1, (2 - normalized.r) * graph.height / 2, 1, 1);
+    graphCtx.fillRect(graph.width - 1, (2 - normalized.r) * graph.height / 2 + 20, 1, 1);
     graphCtx.fillStyle = '#0f0';
-    graphCtx.fillRect(graph.width - 1, (2 - normalized.g) * graph.height / 2, 1, 1);
+    graphCtx.fillRect(graph.width - 1, (2 - normalized.g) * graph.height / 2 + 20, 1, 1);
     graphCtx.fillStyle = '#00f';
-    graphCtx.fillRect(graph.width - 1, (2 - normalized.b) * graph.height / 2, 1, 1);
+    graphCtx.fillRect(graph.width - 1, (2 - normalized.b) * graph.height / 2 + 20, 1, 1);
 
-    graphCtx.fillStyle = 'rgba(255, 0, 0, 1)';
-    graphCtx.fillRect(
-      0, (2 - calibration.max.r) * graph.height / 2,
-      3, (calibration.max.r - calibration.min.r) * graph.height / 2
-    );
-    graphCtx.fillStyle = 'rgba(0, 255, 0, 1)';
-    graphCtx.fillRect(
-      3, (2 - calibration.max.g) * graph.height / 2,
-      3, (calibration.max.g - calibration.min.g) * graph.height / 2
-    );
-    graphCtx.fillStyle = 'rgba(0, 0, 255, 1)';
-    graphCtx.fillRect(
-      6, (2 - calibration.max.b) * graph.height / 2,
-      3, (calibration.max.b - calibration.min.b) * graph.height / 2
-    );
+    // graphCtx.fillStyle = 'rgba(255, 0, 0, 1)';
+    // graphCtx.fillRect(
+    //   0, (2 - calibration.max.r) * graph.height / 2,
+    //   3, (calibration.max.r - calibration.min.r) * graph.height / 2
+    // );
+    // graphCtx.fillStyle = 'rgba(0, 255, 0, 1)';
+    // graphCtx.fillRect(
+    //   3, (2 - calibration.max.g) * graph.height / 2,
+    //   3, (calibration.max.g - calibration.min.g) * graph.height / 2
+    // );
+    // graphCtx.fillStyle = 'rgba(0, 0, 255, 1)';
+    // graphCtx.fillRect(
+    //   6, (2 - calibration.max.b) * graph.height / 2,
+    //   3, (calibration.max.b - calibration.min.b) * graph.height / 2
+    // );
   }
 
   requestAnimationFrame(nextFrame);
@@ -202,7 +221,7 @@ function *calibrationSignal(seconds) {
   const frames = seconds * 60;
 
   for (let i = 0; i < frames; i++) {
-    const v = (Math.sin(i / frames * Math.PI * 6) + 1) / 2;
+    const v = (Math.sin(i / frames * Math.PI * 6 - Math.PI / 2) + 1) / 2;
     yield {
       r: i < frames / 3 ? v : 0,
       g: i >= frames / 3 && i < frames * 2 / 3 ? v : 0,

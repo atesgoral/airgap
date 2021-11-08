@@ -88,12 +88,11 @@ function process(video) {
 
   const emitterCtx = emitter.getContext('2d');
 
-  preview.width = preview.clientWidth;
-  preview.height = preview.clientHeight;
+  camera.width = camera.clientWidth;
+  camera.height = camera.clientHeight;
 
-  const previewCtx = preview.getContext('2d');
+  const cameraCtx = camera.getContext('2d');
 
-  const pixel = document.createElement('canvas');
   pixel.width = 1;
   pixel.height = 1;
 
@@ -108,10 +107,10 @@ function process(video) {
   function nextFrame(t) {
     requestAnimationFrame(nextFrame);
 
-    previewCtx.drawImage(
+    cameraCtx.drawImage(
       video,
       0, 0, video.videoWidth, video.videoHeight,
-      0, 0, preview.width, preview.height
+      0, 0, camera.width, camera.height
     );
     pixelCtx.drawImage(
       video,
@@ -203,10 +202,11 @@ function *calibrationSignal(seconds) {
   const frames = seconds * 60;
 
   for (let i = 0; i < frames; i++) {
+    const v = (Math.sin(i / frames * Math.PI * 6) + 1) / 2;
     yield {
-      r: (Math.sin(i / frames * Math.PI * 2) + 1) / 2,
-      g: (Math.sin(i / frames * Math.PI * 3) + 1) / 2,
-      b: (Math.sin(i / frames * Math.PI * 5) + 1) / 2
+      r: i < frames / 3 ? v : 0,
+      g: i >= frames / 3 && i < frames * 2 / 3 ? v : 0,
+      b: i >= frames * 2 / 3 ? v : 0
     };
   }
 }
@@ -314,7 +314,7 @@ async function init() {
     const iterator = true
       ? scanlineIterator
       : serpentineIterator;
-    const imageUrl = 'patterns/640px-Sweden_TV1_colour_1969.png';
+    const imageUrl = 'patterns/Philips_PM5544.svg.png';
 
     const imageSignal = await loadImage(imageUrl, iterator);
     outputRenderer.init(output, iterator);

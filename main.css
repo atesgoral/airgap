@@ -23,11 +23,20 @@ body {
   bottom: 0;
   border-top: 1px solid #222;
 }
-#preview {
+#camera {
   width: 100px;
   height: 100px;
   position: absolute;
-  bottom: top;
+  top: 0;
+  right: 0;
+  margin: 10px;
+  border: 1px solid #222;
+}
+#pixel {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: calc(100px + 10px);
   right: 0;
   margin: 10px;
   border: 1px solid #222;

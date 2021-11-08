@@ -330,6 +330,12 @@ async function init() {
     signals.push({signal: imageSignal});
   });
 
+  fullscreen.addEventListener('click', () => {
+    document.body.requestFullscreen({
+      navigationUI: 'hide'
+    });
+  });
+
   process(video);
 }
 

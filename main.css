@@ -15,13 +15,6 @@ body {
   left: 50%;
   margin-left: -25px;
 }
-#emitter.-fullscreen {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  margin-bottom: -200px;
-}
 #graph {
   background: #222;
   position: absolute;
@@ -44,29 +37,36 @@ body {
   bottom: 200px;
   left: 0px;
   margin: 10px;
-  width: 128px;
-  height: 128px;
+  width: 512px;
+  height: 512px;
   border: 1px solid #222;
 }
 #output {
   position: absolute;
   bottom: 200px;
-  left: calc(128px + 10px);
+  left: calc(512px + 10px);
   margin: 10px;
-  width: 128px;
-  height: 128px;
+  width: 512px;
+  height: 512px;
   border: 1px solid #222;
 }
-#transmit {
+#buttons {
   position: absolute;
-  top: 25px;
-  left: 25px;
-  margin-top: 5px;
-  margin-left: 5px;
-  background: #000;
-  color: #eee;
-  border: 1px solid #eee;
+  top: 10px;
+  left: 10px;
+  font-size: 0;
+}
+#buttons > button {
+  background: #222;
+  color: #ccc;
+  border: 1px solid #ccc;
   box-sizing: border-box;
   padding: 5px 10px;
   cursor: pointer;
+  margin: 0;
+  margin-right: 10px;
+}
+#buttons > button:hover {
+  color: #eee;
+  border-color: #eee;
 }

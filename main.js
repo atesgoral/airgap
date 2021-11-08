@@ -9,19 +9,28 @@ function *scanlineIterator(width, height) {
 }
 
 const calibration = {
-  min: Infinity,
-  max: 0,
   reset() {
-    this.min = Infinity;
-    this.max = 0;
+    this.min = {r: Infinity, g: Infinity, b: Infinity};
+    this.max = {r: 0, g: 0, b: 0};
   },
-  train(value, _ts) {
-    this.min = Math.min(this.min, value);
-    this.max = Math.max(this.max, value);
+  train(color, _ts) {
+    this.min = {
+      r: Math.min(this.min.r, color.r),
+      g: Math.min(this.min.g, color.g),
+      b: Math.min(this.min.b, color.b)
+    };
+    this.max = {
+      r: Math.max(this.max.r, color.r),
+      g: Math.max(this.max.g, color.g),
+      b: Math.max(this.max.b, color.b)
+    };
   },
-  normalize(value) {
-    const range = this.max - this.min;
-    return (value - this.min) / range + this.min;
+  normalize(color) {
+    return {
+      r: (color.r - this.min.r) / (this.max.r - this.min.r) + this.min.r,
+      g: (color.g - this.min.g) / (this.max.g - this.min.g) + this.min.g,
+      b: (color.b - this.min.b) / (this.max.b - this.min.b) + this.min.b
+    };
   }
 };
 
@@ -43,7 +52,7 @@ const outputRenderer = {
 
     this.it = scanlineIterator(output.width, output.height);
   },
-  render(value) {
+  render(color) {
     if (!this.it) {
       return;
     }
@@ -55,9 +64,7 @@ const outputRenderer = {
       return;
     }
 
-    const gray = value * 255;
-
-    this.offscreenCtx.fillStyle = `rgb(${gray}, ${gray}, ${gray})`;
+    this.offscreenCtx.fillStyle = `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255})`;
     this.offscreenCtx.fillRect(pos.x, pos.y, 1, 1);
 
     this.outputCtx.drawImage(this.offscreen, 0, 0);
@@ -80,7 +87,6 @@ function process(video) {
   pixel.height = 1;
 
   const pixelCtx = pixel.getContext('2d');
-  pixelCtx.filter = 'grayscale(100%)';
 
   graph.width = graph.clientWidth;
   graph.height = graph.clientHeight;
@@ -107,19 +113,31 @@ function process(video) {
     }
 
     const signal = signals[0];
-    const {value, done} = signal?.next();
+    const {value: original, done} = signal?.next();
 
     if (done) {
       signals.shift();
       return;
     }
 
-    if (value !== null) {
-      emitterCtx.fillStyle = `hsl(0, 0%, ${value * 100}%)`;
+    if (original !== null) {
+      emitterCtx.fillStyle = `rgb(${original.r * 255}, ${original.g * 255}, ${original.b * 255})`;
       emitterCtx.fillRect(0, 0, emitter.width, emitter.height);
+
+      graphCtx.fillStyle = '#f00';
+      graphCtx.fillRect(graph.width - 1, (1 - original.r) * graph.height / 2, 1, 1);
+      graphCtx.fillStyle = '#0f0';
+      graphCtx.fillRect(graph.width - 1, (1 - original.g) * graph.height / 2, 1, 1);
+      graphCtx.fillStyle = '#00f';
+      graphCtx.fillRect(graph.width - 1, (1 - original.b) * graph.height / 2, 1, 1);
     }
 
-    const sample = pixelCtx.getImageData(0, 0, 1, 1).data[0] / 255;
+    const data = pixelCtx.getImageData(0, 0, 1, 1).data;
+    const sample = {
+      r: data[0] / 255,
+      g: data[1] / 255,
+      b: data[2] / 255
+    };
 
     calibration.train(sample);
 
@@ -132,17 +150,24 @@ function process(video) {
     graphCtx.fillStyle = '#111';
     graphCtx.fillRect(graph.width - 1, 0, 1, graph.height);
 
-    graphCtx.fillStyle = '#888';
-    graphCtx.fillRect(graph.width - 1, (2 - sample) * graph.height / 2, 1, 1);
+    graphCtx.fillStyle = '#800';
+    graphCtx.fillRect(graph.width - 1, (2 - sample.r) * graph.height / 2, 1, 1);
+    graphCtx.fillStyle = '#080';
+    graphCtx.fillRect(graph.width - 1, (2 - sample.g) * graph.height / 2, 1, 1);
+    graphCtx.fillStyle = '#008';
+    graphCtx.fillRect(graph.width - 1, (2 - sample.b) * graph.height / 2, 1, 1);
 
-    graphCtx.fillStyle = '#eee';
-    graphCtx.fillRect(graph.width - 1, (1 - value) * graph.height / 2, 1, 1);
-    graphCtx.fillRect(graph.width - 1, (2 - normalized) * graph.height / 2, 1, 1);
+    graphCtx.fillStyle = '#f00';
+    graphCtx.fillRect(graph.width - 1, (2 - normalized.r) * graph.height / 2, 1, 1);
+    graphCtx.fillStyle = '#0f0';
+    graphCtx.fillRect(graph.width - 1, (2 - normalized.g) * graph.height / 2, 1, 1);
+    graphCtx.fillStyle = '#00f';
+    graphCtx.fillRect(graph.width - 1, (2 - normalized.b) * graph.height / 2, 1, 1);
 
-    graphCtx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-    graphCtx.fillRect(graph.width - 1, (2 - calibration.max) * graph.height / 2, 1, 1);
-    graphCtx.fillStyle = 'rgba(0, 127, 255, 0.5)';
-    graphCtx.fillRect(graph.width - 1, (2 - calibration.min) * graph.height / 2, 1, 1);
+    // graphCtx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    // graphCtx.fillRect(graph.width - 1, (2 - calibration.max) * graph.height / 2, 1, 1);
+    // graphCtx.fillStyle = 'rgba(0, 127, 255, 0.5)';
+    // graphCtx.fillRect(graph.width - 1, (2 - calibration.min) * graph.height / 2, 1, 1);
   }
 
   requestAnimationFrame(nextFrame);
@@ -152,7 +177,11 @@ function *calibrationSignal(seconds) {
   const frames = seconds * 60;
 
   for (let i = 0; i < frames; i++) {
-    yield 1 - Math.abs(i / frames * 2 - 1);
+    yield {
+      r: (Math.sin(i / frames * Math.PI * 2) + 1) / 2,
+      g: (Math.sin(i / frames * Math.PI * 3) + 1) / 2,
+      b: (Math.sin(i / frames * Math.PI * 5) + 1) / 2
+    };
   }
 }
 
@@ -161,7 +190,15 @@ function *imageSignal(imageData, updatePosition) {
 
   for (let pos of it) {
     updatePosition(pos.x, pos.y);
-    yield imageData.data[(pos.y * imageData.width + pos.x) * 4] / 255; // R
+
+    const offset = (pos.y * imageData.width + pos.x) * 4;
+    const data = imageData.data;
+
+    yield {
+      r: data[offset] / 255,
+      g: data[offset + 1] / 255,
+      b: data[offset + 2] / 255
+    };
   }
 
   updatePosition();
@@ -184,8 +221,6 @@ async function loadImage(url) {
       input.height = input.clientHeight;
 
       const inputCtx = input.getContext('2d');
-
-      inputCtx.filter = 'grayscale(100%)';
 
       function pasteImage() {
         inputCtx.drawImage(
@@ -241,7 +276,7 @@ async function init() {
 
     signals = [];
 
-    signals.push(calibrationSignal(2));
+    signals.push(calibrationSignal(5));
     signals.push(delay(0.5));
     signals.push(imageSignal);
 

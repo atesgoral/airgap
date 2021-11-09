@@ -1,3 +1,5 @@
+import {Receiver} from './Receiver.js';
+
 let signals = [];
 
 function *scanlineIterator(width, height) {
@@ -89,21 +91,11 @@ const outputRenderer = {
   }
 };
 
-function process(video) {
+function process(receiver) {
   emitter.width = emitter.clientWidth;
   emitter.height = emitter.clientHeight;
 
   const emitterCtx = emitter.getContext('2d');
-
-  camera.width = camera.clientWidth;
-  camera.height = camera.clientHeight;
-
-  const cameraCtx = camera.getContext('2d');
-
-  pixel.width = 1;
-  pixel.height = 1;
-
-  const pixelCtx = pixel.getContext('2d');
 
   graph.width = graph.clientWidth;
   graph.height = graph.clientHeight;
@@ -114,16 +106,7 @@ function process(video) {
   function nextFrame(t) {
     requestAnimationFrame(nextFrame);
 
-    cameraCtx.drawImage(
-      video,
-      0, 0, video.videoWidth, video.videoHeight,
-      0, 0, camera.width, camera.height
-    );
-    pixelCtx.drawImage(
-      video,
-      0, 0, video.videoWidth, video.videoHeight,
-      0, 0, 1, 1
-    );
+    const sample = receiver.sample();
 
     if (!signals.length) {
       return;
@@ -162,13 +145,6 @@ function process(video) {
       graphCtx.fillStyle = '#00f';
       graphCtx.fillRect(graph.width - 1, (1 - original.b) * graph.height / 2 + 10, 1, 1);
     }
-
-    const data = pixelCtx.getImageData(0, 0, 1, 1).data;
-    const sample = {
-      r: data[0] / 255,
-      g: data[1] / 255,
-      b: data[2] / 255
-    };
 
     if (isCalibrating) {
       calibration.train(sample);
@@ -318,22 +294,21 @@ async function loadImage(url, iterator) {
   });
 }
 
+function $(selector) {
+  return document.querySelector(selector);
+}
+
 async function init() {
-  const constraints = {
-    video: true
-  };
+  const receiver = new Receiver();
 
-  const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+  await receiver.init(
+    $('#camera'),
+    $('#pixel')
+  );
 
-  const video = document.createElement('video');
-  video.autoplay = true;
-  video.srcObject = mediaStream;
-
-  transmit.addEventListener('click', async () => {
-    const iterator = true
-      ? scanlineIterator
-      : serpentineIterator;
+  $('#transmit').addEventListener('click', async () => {
     const imageUrl = 'patterns/tv-test-patterns-02.jpeg';
+    const iterator = scanlineIterator;
 
     const imageSignal = await loadImage(imageUrl, iterator);
     outputRenderer.init(output, iterator);
@@ -347,13 +322,13 @@ async function init() {
     signals.push({signal: imageSignal});
   });
 
-  fullscreen.addEventListener('click', () => {
+  $('#fullscreen').addEventListener('click', () => {
     document.body.requestFullscreen({
       navigationUI: 'hide'
     });
   });
 
-  process(video);
+  process(receiver);
 }
 
 window.addEventListener('load', init);

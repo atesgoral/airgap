@@ -27,7 +27,7 @@ export class Input extends Canvas {
 
     return new Promise((resolve) => {
       image.onload = () => {
-        this.pasteImage(image);
+        this.coverImage(image);
 
         const imageData = this.ctx.getImageData(
           0, 0,
@@ -35,7 +35,7 @@ export class Input extends Canvas {
         );
 
         resolve(imageSignal(imageData, iterator, (pos) => {
-          this.pasteImage(image);
+          this.coverImage(image);
 
           if (!pos) {
             return;

@@ -1,12 +1,12 @@
 import {Color} from './Color.js';
 
 export class Canvas {
-  constructor(canvas) {
+  constructor(canvas, intrinsicWidth, intrinsicHeight) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
 
-    this.width = canvas.width = canvas.clientWidth;
-    this.height = canvas.height = canvas.clientHeight;
+    this.width = canvas.width = intrinsicWidth || canvas.clientWidth;
+    this.height = canvas.height = intrinsicHeight || canvas.clientHeight;
   }
 
   clear() {
@@ -18,7 +18,15 @@ export class Canvas {
     this.ctx.fillRect(0, 0, this.width, this.height);
   }
 
-  pasteImage(image) {
+  stretchImage(image, width, height) {
+    this.ctx.drawImage(
+      image,
+      0, 0, width || image.width, height || image.height,
+      0, 0, this.width, this.height
+    );
+  }
+
+  coverImage(image) {
     const imageAspectRatio = image.width / image.height;
     const inputAspectRatio = this.width / this.height;
 

@@ -1,5 +1,6 @@
 import {Emitter} from './Emitter.js';
-import {Receiver} from './Receiver.js';
+import {Camera} from './Camera.js';
+import {Pixel} from './Pixel.js';
 import {Input} from './Input.js';
 import {Output} from './Output.js';
 import {Calibration} from './Calibration.js';
@@ -26,11 +27,15 @@ function *serpentineIterator(width, height) {
   }
 }
 
-function process(emitter, receiver, output, calibration, graph) {
+function process(emitter, camera, pixel, output, calibration, graph) {
   function nextFrame(t) {
     requestAnimationFrame(nextFrame);
 
-    const sample = receiver.sample();
+    camera.snapshot();
+
+    pixel.stretchImage(camera.canvas);
+
+    const sample = pixel.read();
 
     if (!signals.length) {
       return;
@@ -95,13 +100,14 @@ function $(selector) {
 
 window.addEventListener('load', async () => {
   const emitter = new Emitter($('#emitter'));
-  const receiver = new Receiver($('#camera'), $('#pixel'));
+  const camera = new Camera($('#camera'));
+  const pixel = new Pixel($('#pixel'));
   const input = new Input($('#input'));
   const output = new Output($('#output'));
   const calibration = new Calibration();
   const graph = new Graph($('#graph'));
 
-  await receiver.init();
+  await camera.init();
 
   $('#transmit').addEventListener('click', async () => {
     const imageUrl = 'patterns/tv-test-patterns-02.jpeg';
@@ -124,5 +130,5 @@ window.addEventListener('load', async () => {
     document.body.requestFullscreen({navigationUI: 'hide'});
   });
 
-  process(emitter, receiver, output, calibration, graph);
+  process(emitter, camera, pixel, output, calibration, graph);
 });

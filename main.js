@@ -10,14 +10,6 @@ import {Input} from './components/Input.js';
 import {Output} from './components/Output.js';
 import {Graph} from './components/Graph.js';
 
-function *delay(seconds) {
-  const frames = seconds * 60;
-
-  for (let i = 0; i < frames; i++) {
-    yield null;
-  }
-}
-
 window.addEventListener('load', async () => {
   const emitter = new Emitter($('#emitter').get());
   const camera = new Camera($('#camera').get());
@@ -43,7 +35,6 @@ window.addEventListener('load', async () => {
 
     signals = [
       {signal: calibrationSignal, isCalibrating: true},
-      //{signal: delay(0.5)},
       {signal: imageSignal}
     ];
   });

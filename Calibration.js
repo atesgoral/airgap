@@ -1,13 +1,15 @@
+import {Color} from './Color.js';
+
 function *calibrationSignal(seconds) {
   const frames = seconds * 60;
 
   for (let i = 0; i < frames; i++) {
     const v = (Math.sin(i / frames * Math.PI * 6 - Math.PI / 2) + 1) / 2;
-    yield {
+    yield new Color({
       r: i < frames / 3 ? v : 0,
       g: i >= frames / 3 && i < frames * 2 / 3 ? v : 0,
       b: i >= frames * 2 / 3 ? v : 0
-    };
+    });
   }
 }
 
@@ -17,7 +19,7 @@ function clamp(v) {
 
 export class Calibration {
   init(seconds) {
-    this.min = {r: Infinity, g: Infinity, b: Infinity};
+    this.min = {r: 1, g: 1, b: 1};
     this.max = {r: 0, g: 0, b: 0};
 
     return calibrationSignal(seconds);
@@ -37,10 +39,10 @@ export class Calibration {
   }
 
   normalize(color) {
-    return {
+    return new Color({
       r: clamp((color.r - this.min.r) / (this.max.r - this.min.r) + this.min.r),
       g: clamp((color.g - this.min.g) / (this.max.g - this.min.g) + this.min.g),
       b: clamp((color.b - this.min.b) / (this.max.b - this.min.b) + this.min.b)
-    };
+    });
   }
 }

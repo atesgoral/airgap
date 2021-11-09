@@ -1,5 +1,3 @@
-import {Color} from './Color.js';
-
 export class Canvas {
   constructor(canvas, intrinsicWidth, intrinsicHeight) {
     this.canvas = canvas;
@@ -14,7 +12,7 @@ export class Canvas {
   }
 
   fill(color) {
-    this.ctx.fillStyle = new Color(color).toCss();
+    this.ctx.fillStyle = color.toCss();
     this.ctx.fillRect(0, 0, this.width, this.height);
   }
 

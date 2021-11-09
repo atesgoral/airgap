@@ -5,6 +5,7 @@ import {Input} from './Input.js';
 import {Output} from './Output.js';
 import {Calibration} from './Calibration.js';
 import {Graph} from './Graph.js';
+import {Color} from './Color.js';
 
 let signals = [];
 
@@ -52,14 +53,13 @@ function process(emitter, camera, pixel, output, calibration, graph) {
     graph.advance();
 
     if (original !== null) {
-
       emitter.emit(original);
 
       graph.plot(original, 0, 10);
 
-      graph.plot({r: 1}, (1 - original.r) * graph.height / 2 + 10);
-      graph.plot({g: 1}, (1 - original.g) * graph.height / 2 + 10);
-      graph.plot({b: 1}, (1 - original.b) * graph.height / 2 + 10);
+      graph.plot(new Color({r: 1}), (1 - original.r) * graph.height / 2 + 10);
+      graph.plot(new Color({g: 1}), (1 - original.g) * graph.height / 2 + 10);
+      graph.plot(new Color({b: 1}), (1 - original.b) * graph.height / 2 + 10);
     }
 
     if (isCalibrating) {
@@ -74,13 +74,13 @@ function process(emitter, camera, pixel, output, calibration, graph) {
       graph.plot(sample, graph.height / 2, 10);
     }
 
-    graph.plot({r: 0.5}, (2 - sample.r) * graph.height / 2 + 20);
-    graph.plot({g: 0.5}, (2 - sample.g) * graph.height / 2 + 20);
-    graph.plot({b: 0.5}, (2 - sample.b) * graph.height / 2 + 20);
+    graph.plot(new Color({r: 0.5}), (2 - sample.r) * graph.height / 2 + 20);
+    graph.plot(new Color({g: 0.5}), (2 - sample.g) * graph.height / 2 + 20);
+    graph.plot(new Color({b: 0.5}), (2 - sample.b) * graph.height / 2 + 20);
 
-    graph.plot({r: 1}, (2 - normalized.r) * graph.height / 2 + 20);
-    graph.plot({g: 1}, (2 - normalized.g) * graph.height / 2 + 20);
-    graph.plot({b: 1}, (2 - normalized.b) * graph.height / 2 + 20);
+    graph.plot(new Color({r: 1}), (2 - normalized.r) * graph.height / 2 + 20);
+    graph.plot(new Color({g: 1}), (2 - normalized.g) * graph.height / 2 + 20);
+    graph.plot(new Color({b: 1}), (2 - normalized.b) * graph.height / 2 + 20);
   }
 
   requestAnimationFrame(nextFrame);

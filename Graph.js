@@ -3,7 +3,7 @@ import {Color} from './Color.js';
 
 export class Graph extends Canvas {
   init() {
-    this.fill({});
+    this.fill(new Color({}));
   }
 
   advance() {
@@ -14,7 +14,7 @@ export class Graph extends Canvas {
 
   plot(color, y, h = 1) {
     this.ctx.globalCompositeOperation = 'lighter';
-    this.ctx.fillStyle = new Color(color).toCss();
+    this.ctx.fillStyle = color.toCss();
     this.ctx.fillRect(this.width - 1, y, 1, h);
     this.ctx.globalCompositeOperation = 'source-over';
   }

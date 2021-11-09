@@ -1,4 +1,5 @@
 import {Canvas} from './Canvas.js';
+import {Color} from './Color.js';
 
 function *imageSignal(imageData, iterator, updatePosition) {
   const it = iterator(imageData.width, imageData.height);
@@ -9,11 +10,11 @@ function *imageSignal(imageData, iterator, updatePosition) {
     const offset = (pos.y * imageData.width + pos.x) * 4;
     const data = imageData.data;
 
-    yield {
+    yield new Color({
       r: data[offset] / 255,
       g: data[offset + 1] / 255,
       b: data[offset + 2] / 255
-    };
+    });
   }
 
   updatePosition();

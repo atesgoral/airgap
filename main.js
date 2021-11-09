@@ -1,3 +1,4 @@
+import {Emitter} from './Emitter.js';
 import {Receiver} from './Receiver.js';
 
 let signals = [];
@@ -91,12 +92,7 @@ const outputRenderer = {
   }
 };
 
-function process(receiver) {
-  emitter.width = emitter.clientWidth;
-  emitter.height = emitter.clientHeight;
-
-  const emitterCtx = emitter.getContext('2d');
-
+function process(emitter, receiver) {
   graph.width = graph.clientWidth;
   graph.height = graph.clientHeight;
 
@@ -132,8 +128,7 @@ function process(receiver) {
     if (original !== null) {
       const originalRgb = `rgb(${original.r * 255}, ${original.g * 255}, ${original.b * 255})`;
 
-      emitterCtx.fillStyle = originalRgb;
-      emitterCtx.fillRect(0, 0, emitter.width, emitter.height);
+      emitter.emit(original);
 
       graphCtx.fillStyle = originalRgb;
       graphCtx.fillRect(graph.width - 1, 0, 1, 10);
@@ -299,10 +294,8 @@ function $(selector) {
 }
 
 async function init() {
-  const receiver = new Receiver(
-    $('#camera'),
-    $('#pixel')
-  );
+  const emitter = new Emitter($('#emitter'));
+  const receiver = new Receiver($('#camera'), $('#pixel'));
 
   await receiver.init();
 
@@ -328,7 +321,7 @@ async function init() {
     });
   });
 
-  process(receiver);
+  process(emitter, receiver);
 }
 
 window.addEventListener('load', init);

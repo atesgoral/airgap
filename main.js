@@ -1,5 +1,7 @@
+import {$} from './lib/$.js';
 import {Calibration} from './lib/Calibration.js';
 import {Color} from './lib/Color.js';
+
 import {Emitter} from './components/Emitter.js';
 import {Camera} from './components/Camera.js';
 import {Pixel} from './components/Pixel.js';
@@ -94,22 +96,18 @@ function *delay(seconds) {
   }
 }
 
-function $(selector) {
-  return document.querySelector(selector);
-}
-
 window.addEventListener('load', async () => {
-  const emitter = new Emitter($('#emitter'));
-  const camera = new Camera($('#camera'));
-  const pixel = new Pixel($('#pixel'));
-  const input = new Input($('#input'));
-  const output = new Output($('#output'));
+  const emitter = new Emitter($('#emitter').get());
+  const camera = new Camera($('#camera').get());
+  const pixel = new Pixel($('#pixel').get());
+  const input = new Input($('#input').get());
+  const output = new Output($('#output').get());
   const calibration = new Calibration();
-  const graph = new Graph($('#graph'));
+  const graph = new Graph($('#graph').get());
 
   await camera.init();
 
-  $('#transmit').addEventListener('click', async () => {
+  $('#transmit').click(async () => {
     const imageUrl = 'patterns/tv-test-patterns-02.jpeg';
     const iterator = scanlineIterator;
 
@@ -126,7 +124,7 @@ window.addEventListener('load', async () => {
     ];
   });
 
-  $('#fullscreen').addEventListener('click', () => {
+  $('#fullscreen').click(() => {
     document.body.requestFullscreen({navigationUI: 'hide'});
   });
 

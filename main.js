@@ -1,7 +1,6 @@
 import {$} from './lib/$.js';
 import * as scanners from './lib/scanners.js';
 import {Calibration} from './lib/Calibration.js';
-import {Color} from './lib/Color.js';
 
 import {Emitter} from './components/Emitter.js';
 import {Camera} from './components/Camera.js';

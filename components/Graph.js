@@ -27,6 +27,7 @@ export class Graph extends Canvas {
         1
       );
     }
+
     this.ctx.globalCompositeOperation = 'source-over';
   }
 

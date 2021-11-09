@@ -10,10 +10,49 @@ import {Input} from './components/Input.js';
 import {Output} from './components/Output.js';
 import {Graph} from './components/Graph.js';
 
-let signals = [];
+function *delay(seconds) {
+  const frames = seconds * 60;
 
-function process(emitter, camera, pixel, output, calibration, graph) {
-  function nextFrame(t) {
+  for (let i = 0; i < frames; i++) {
+    yield null;
+  }
+}
+
+window.addEventListener('load', async () => {
+  const emitter = new Emitter($('#emitter').get());
+  const camera = new Camera($('#camera').get());
+  const pixel = new Pixel($('#pixel').get());
+  const input = new Input($('#input').get());
+  const output = new Output($('#output').get());
+  const calibration = new Calibration();
+  const graph = new Graph($('#graph').get());
+
+  await camera.init();
+
+  let signals = [];
+
+  $('#transmit').click(async () => {
+    const imageUrl = 'patterns/tv-test-patterns-02.jpeg';
+    const scanner = scanners.raster;
+
+    const calibrationSignal = calibration.init(5);
+    const imageSignal = await input.init(imageUrl, scanner);
+
+    output.init(scanner);
+    graph.init();
+
+    signals = [
+      {signal: calibrationSignal, isCalibrating: true},
+      //{signal: delay(0.5)},
+      {signal: imageSignal}
+    ];
+  });
+
+  $('#fullscreen').click(() => {
+    document.body.requestFullscreen({navigationUI: 'hide'});
+  });
+
+  function nextFrame() {
     requestAnimationFrame(nextFrame);
 
     camera.snapshot();
@@ -68,47 +107,4 @@ function process(emitter, camera, pixel, output, calibration, graph) {
   }
 
   requestAnimationFrame(nextFrame);
-}
-
-function *delay(seconds) {
-  const frames = seconds * 60;
-
-  for (let i = 0; i < frames; i++) {
-    yield null;
-  }
-}
-
-window.addEventListener('load', async () => {
-  const emitter = new Emitter($('#emitter').get());
-  const camera = new Camera($('#camera').get());
-  const pixel = new Pixel($('#pixel').get());
-  const input = new Input($('#input').get());
-  const output = new Output($('#output').get());
-  const calibration = new Calibration();
-  const graph = new Graph($('#graph').get());
-
-  await camera.init();
-
-  $('#transmit').click(async () => {
-    const imageUrl = 'patterns/tv-test-patterns-02.jpeg';
-    const scanner = scanners.raster;
-
-    const calibrationSignal = calibration.init(5);
-    const imageSignal = await input.init(imageUrl, scanner);
-
-    output.init(scanner);
-    graph.init();
-
-    signals = [
-      {signal: calibrationSignal, isCalibrating: true},
-      //{signal: delay(0.5)},
-      {signal: imageSignal}
-    ];
-  });
-
-  $('#fullscreen').click(() => {
-    document.body.requestFullscreen({navigationUI: 'hide'});
-  });
-
-  process(emitter, camera, pixel, output, calibration, graph);
 });

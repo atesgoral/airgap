@@ -1,5 +1,6 @@
 import {Emitter} from './Emitter.js';
 import {Receiver} from './Receiver.js';
+import {Input} from './Input.js';
 import {Output} from './Output.js';
 
 let signals = [];
@@ -164,92 +165,12 @@ function *calibrationSignal(seconds) {
   }
 }
 
-function *imageSignal(imageData, iterator, updatePosition) {
-  const it = iterator(imageData.width, imageData.height);
-
-  for (let pos of it) {
-    updatePosition(pos.x, pos.y);
-
-    const offset = (pos.y * imageData.width + pos.x) * 4;
-    const data = imageData.data;
-
-    yield {
-      r: data[offset] / 255,
-      g: data[offset + 1] / 255,
-      b: data[offset + 2] / 255
-    };
-  }
-
-  updatePosition();
-}
-
 function *delay(seconds) {
   const frames = seconds * 60;
 
   for (let i = 0; i < frames; i++) {
     yield null;
   }
-}
-
-async function loadImage(url, iterator) {
-  const image = new Image();
-
-  return new Promise((resolve) => {
-    image.onload = () => {
-      input.width = input.clientWidth;
-      input.height = input.clientHeight;
-
-      const inputCtx = input.getContext('2d');
-
-      function pasteImage() {
-        const imageAspect = image.width / image.height;
-        const inputAspect = input.width / input.height;
-
-        if (imageAspect >= inputAspect) {
-          const overflowWidth = input.height * image.width / image.height;
-
-          inputCtx.drawImage(
-            image,
-            (input.width - overflowWidth) / 2, 0, overflowWidth, input.height
-          );
-        } else {
-          const overflowHeight = input.width * image.height / image.width;
-
-          inputCtx.drawImage(
-            image,
-            0, (input.height - overflowHeight) / 2, input.width, overflowHeight
-          );
-        }
-      }
-
-      pasteImage();
-
-      const imageData = inputCtx.getImageData(
-        0, 0, input.width, input.height
-      );
-
-      resolve(imageSignal(imageData, iterator, (x, y) => {
-        pasteImage();
-
-        if (x === undefined) {
-          return;
-        }
-
-        inputCtx.globalCompositeOperation = 'difference';
-        inputCtx.fillStyle = `hsl(0, 0%, ${(Math.random() / 2 + 0.5) * 100}%)`;
-
-        inputCtx.fillRect(x, 0, 1, input.height);
-        inputCtx.fillRect(0, y, input.width, 1);
-
-        inputCtx.globalCompositeOperation = 'source-over';
-        inputCtx.fillStyle = '#fff';
-
-        inputCtx.fillRect(x, y, 1, 1);
-      }));
-    };
-
-    image.src = url;
-  });
 }
 
 function $(selector) {
@@ -259,6 +180,7 @@ function $(selector) {
 async function init() {
   const emitter = new Emitter($('#emitter'));
   const receiver = new Receiver($('#camera'), $('#pixel'));
+  const input = new Input($('#input'));
   const output = new Output($('#output'));
 
   await receiver.init();
@@ -267,7 +189,7 @@ async function init() {
     const imageUrl = 'patterns/tv-test-patterns-02.jpeg';
     const iterator = scanlineIterator;
 
-    const imageSignal = await loadImage(imageUrl, iterator);
+    const imageSignal = await input.init(imageUrl, iterator);
 
     output.init(iterator);
 

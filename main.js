@@ -1,5 +1,6 @@
 import {Emitter} from './Emitter.js';
 import {Receiver} from './Receiver.js';
+import {Output} from './Output.js';
 
 let signals = [];
 
@@ -52,47 +53,7 @@ const calibration = {
   }
 };
 
-const outputRenderer = {
-  init(output, iterator) {
-    output.width = output.clientWidth;
-    output.height = output.clientHeight;
-
-    this.outputCtx = output.getContext('2d');
-
-    this.outputCtx.clearRect(0, 0, output.width, output.height);
-
-    const offscreen = document.createElement('canvas');
-    offscreen.width = output.width;
-    offscreen.height = output.height;
-
-    this.offscreen = offscreen;
-    this.offscreenCtx = offscreen.getContext('2d');
-
-    this.it = iterator(output.width, output.height);
-  },
-  render(color) {
-    if (!this.it) {
-      return;
-    }
-
-    const {value: pos, done} = this.it.next();
-
-    if (done) {
-      this.it = null;
-      return;
-    }
-
-    const outputRgb = `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255})`;
-    this.offscreenCtx.fillStyle = outputRgb;
-    this.offscreenCtx.fillRect(pos.x, pos.y, 1, 1);
-
-    this.outputCtx.drawImage(this.offscreen, 0, 0);
-
-    return outputRgb;
-  }
-};
-
-function process(emitter, receiver) {
+function process(emitter, receiver, output) {
   graph.width = graph.clientWidth;
   graph.height = graph.clientHeight;
 
@@ -148,9 +109,11 @@ function process(emitter, receiver) {
     const normalized = calibration.normalize(sample);
 
     if (!isCalibrating) {
-      const outputRgb = outputRenderer.render(sample);
+      output.render(sample);
 
-      graphCtx.fillStyle = outputRgb;
+      const cssColor = `rgb(${sample.r * 255}, ${sample.g * 255}, ${sample.b * 255})`;
+
+      graphCtx.fillStyle = cssColor;
       graphCtx.fillRect(graph.width - 1, graph.height / 2, 1, 10);
     }
 
@@ -296,6 +259,7 @@ function $(selector) {
 async function init() {
   const emitter = new Emitter($('#emitter'));
   const receiver = new Receiver($('#camera'), $('#pixel'));
+  const output = new Output($('#output'));
 
   await receiver.init();
 
@@ -304,7 +268,8 @@ async function init() {
     const iterator = scanlineIterator;
 
     const imageSignal = await loadImage(imageUrl, iterator);
-    outputRenderer.init(output, iterator);
+
+    output.init(iterator);
 
     calibration.reset();
 
@@ -321,7 +286,7 @@ async function init() {
     });
   });
 
-  process(emitter, receiver);
+  process(emitter, receiver, output);
 }
 
 window.addEventListener('load', init);

@@ -1,26 +1,18 @@
-export class Output {
-  constructor(outputCanvas) {
-    this.outputCanvas = outputCanvas;
-    this.outputCtx = outputCanvas.getContext('2d');
+import {Canvas} from './Canvas.js';
+import {Color} from './Color.js';
 
-    outputCanvas.width = outputCanvas.clientWidth;
-    outputCanvas.height = outputCanvas.clientHeight;
-  }
-
+export class Output extends Canvas {
   init(iterator) {
-    this.outputCtx.clearRect(
-      0, 0,
-      this.outputCanvas.width, this.outputCanvas.height
-    );
+    this.clear();
 
     const offscreen = document.createElement('canvas');
-    offscreen.width = this.outputCanvas.width;
-    offscreen.height = this.outputCanvas.height;
+    offscreen.width = this.width;
+    offscreen.height = this.height;
 
     this.offscreen = offscreen;
     this.offscreenCtx = offscreen.getContext('2d');
 
-    this.it = iterator(this.outputCanvas.width, this.outputCanvas.height);
+    this.it = iterator(this.width, this.height);
   }
 
   render(color) {
@@ -35,12 +27,9 @@ export class Output {
       return;
     }
 
-    const cssColor = `rgb(${color.r * 255}, ${color.g * 255}, ${color.b * 255})`;
-
-    this.offscreenCtx.fillStyle = cssColor;
+    this.offscreenCtx.fillStyle = new Color(color).toCss()
     this.offscreenCtx.fillRect(pos.x, pos.y, 1, 1);
 
-    this.outputCtx.drawImage(this.offscreen, 0, 0);
+    this.ctx.drawImage(this.offscreen, 0, 0);
   }
 }
-

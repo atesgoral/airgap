@@ -1,45 +1,21 @@
-export class Graph {
-  constructor(graphCanvas) {
-    this.graphCanvas = graphCanvas;
-    this.graphCtx = graphCanvas.getContext('2d');
+import {Canvas} from './Canvas.js';
+import {Color} from './Color.js';
 
-    graphCanvas.width = graphCanvas.clientWidth;
-    graphCanvas.height = graphCanvas.clientHeight;
-
-    // @TODO: remove
-    this.height = graphCanvas.height;
-  }
-
+export class Graph extends Canvas {
   init() {
-    this.graphCtx.globalCompositeOperation = 'source-over';
-    this.graphCtx.fillStyle = '#000';
-    this.graphCtx.fillRect(
-      0, 0,
-      this.graphCanvas.width, this.graphCanvas.height
-    );
+    this.fill({});
   }
 
   advance() {
-    this.graphCtx.globalCompositeOperation = 'source-over';
-    this.graphCtx.drawImage(this.graphCanvas, -1, 0);
-    this.graphCtx.fillStyle = '#000';
-    this.graphCtx.fillRect(
-      this.graphCanvas.width - 1, 0,
-      1, this.graphCanvas.height
-    );
-
+    this.ctx.drawImage(this.canvas, -1, 0);
+    this.ctx.fillStyle = '#000';
+    this.ctx.fillRect(this.width - 1, 0, 1, this.height);
   }
 
   plot(color, y, h = 1) {
-    this.graphCtx.globalCompositeOperation = 'lighter';
-    this.graphCtx.fillStyle = `rgb(
-      ${(color.r || 0) * 255},
-      ${(color.g || 0) * 255},
-      ${(color.b || 0) * 255}
-    )`;
-    this.graphCtx.fillRect(
-      this.graphCanvas.width - 1, y,
-      1, h
-    );
+    this.ctx.globalCompositeOperation = 'lighter';
+    this.ctx.fillStyle = new Color(color).toCss();
+    this.ctx.fillRect(this.width - 1, y, 1, h);
+    this.ctx.globalCompositeOperation = 'source-over';
   }
 }

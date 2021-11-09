@@ -1,5 +1,5 @@
 import {Canvas} from './Canvas.js';
-import {Color} from './Color.js';
+import {Color} from '../lib/Color.js';
 
 function *imageSignal(imageData, iterator, updatePosition) {
   const it = iterator(imageData.width, imageData.height);

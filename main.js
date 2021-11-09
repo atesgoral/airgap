@@ -1,11 +1,11 @@
-import {Emitter} from './Emitter.js';
-import {Camera} from './Camera.js';
-import {Pixel} from './Pixel.js';
-import {Input} from './Input.js';
-import {Output} from './Output.js';
-import {Calibration} from './Calibration.js';
-import {Graph} from './Graph.js';
-import {Color} from './Color.js';
+import {Calibration} from './lib/Calibration.js';
+import {Color} from './lib/Color.js';
+import {Emitter} from './components/Emitter.js';
+import {Camera} from './components/Camera.js';
+import {Pixel} from './components/Pixel.js';
+import {Input} from './components/Input.js';
+import {Output} from './components/Output.js';
+import {Graph} from './components/Graph.js';
 
 let signals = [];
 

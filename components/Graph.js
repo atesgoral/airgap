@@ -1,5 +1,5 @@
 import {Canvas} from './Canvas.js';
-import {Color} from './Color.js';
+import {Color} from '../lib/Color.js';
 
 export class Graph extends Canvas {
   init() {

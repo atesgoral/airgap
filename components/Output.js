@@ -1,7 +1,7 @@
 import {Canvas} from './Canvas.js';
 
 export class Output extends Canvas {
-  init(iterator) {
+  init(scanner) {
     this.clear();
 
     const offscreen = document.createElement('canvas');
@@ -11,18 +11,18 @@ export class Output extends Canvas {
     this.offscreen = offscreen;
     this.offscreenCtx = offscreen.getContext('2d');
 
-    this.it = iterator(this.width, this.height);
+    this.scan = scanner.scan(this.width, this.height);
   }
 
   render(color) {
-    if (!this.it) {
+    if (!this.scan) {
       return;
     }
 
-    const {value: pos, done} = this.it.next();
+    const {value: pos, done} = this.scan.next();
 
     if (done) {
-      this.it = null;
+      this.scan = null;
       return;
     }
 

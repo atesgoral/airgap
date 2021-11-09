@@ -1,4 +1,5 @@
 import {$} from './lib/$.js';
+import * as scanners from './lib/scanners.js';
 import {Calibration} from './lib/Calibration.js';
 import {Color} from './lib/Color.js';
 
@@ -10,25 +11,6 @@ import {Output} from './components/Output.js';
 import {Graph} from './components/Graph.js';
 
 let signals = [];
-
-function *scanlineIterator(width, height) {
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      yield {x, y};
-    }
-  }
-}
-
-function *serpentineIterator(width, height) {
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      yield {
-        x: y & 1 ? width - 1 - x : x,
-        y
-      };
-    }
-  }
-}
 
 function process(emitter, camera, pixel, output, calibration, graph) {
   function nextFrame(t) {
@@ -109,12 +91,12 @@ window.addEventListener('load', async () => {
 
   $('#transmit').click(async () => {
     const imageUrl = 'patterns/tv-test-patterns-02.jpeg';
-    const iterator = scanlineIterator;
+    const scanner = scanners.raster;
 
     const calibrationSignal = calibration.init(5);
-    const imageSignal = await input.init(imageUrl, iterator);
+    const imageSignal = await input.init(imageUrl, scanner);
 
-    output.init(iterator);
+    output.init(scanner);
     graph.init();
 
     signals = [

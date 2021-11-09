@@ -1,10 +1,10 @@
 import {Canvas} from './Canvas.js';
 import {Color} from '../lib/Color.js';
 
-function *imageSignal(imageData, iterator, updatePosition) {
-  const it = iterator(imageData.width, imageData.height);
+function *imageSignal(imageData, scanner, updatePosition) {
+  const scan = scanner.scan(imageData.width, imageData.height);
 
-  for (let pos of it) {
+  for (let pos of scan) {
     updatePosition(pos);
 
     const offset = (pos.y * imageData.width + pos.x) * 4;
@@ -21,7 +21,7 @@ function *imageSignal(imageData, iterator, updatePosition) {
 }
 
 export class Input extends Canvas {
-  async init(url, iterator) {
+  async init(url, scanner) {
     const image = new Image();
 
     image.src = url;
@@ -35,7 +35,7 @@ export class Input extends Canvas {
           this.width, this.height
         );
 
-        resolve(imageSignal(imageData, iterator, (pos) => {
+        resolve(imageSignal(imageData, scanner, (pos) => {
           this.coverImage(image);
 
           if (!pos) {

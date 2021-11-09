@@ -1,7 +1,7 @@
 import {Canvas} from './Canvas.js';
 import {Color} from '../lib/Color.js';
 
-function *imageSignal(imageData, scanner, updatePosition) {
+function* imageSignal(imageData, scanner, updatePosition) {
   const scan = scanner.scan(imageData.width, imageData.height);
 
   for (let pos of scan) {
@@ -13,7 +13,7 @@ function *imageSignal(imageData, scanner, updatePosition) {
     yield new Color({
       r: data[offset] / 255,
       g: data[offset + 1] / 255,
-      b: data[offset + 2] / 255
+      b: data[offset + 2] / 255,
     });
   }
 
@@ -30,31 +30,30 @@ export class Input extends Canvas {
       image.onload = () => {
         this.coverImage(image);
 
-        const imageData = this.ctx.getImageData(
-          0, 0,
-          this.width, this.height
-        );
+        const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
 
-        resolve(imageSignal(imageData, scanner, (pos) => {
-          this.coverImage(image);
+        resolve(
+          imageSignal(imageData, scanner, (pos) => {
+            this.coverImage(image);
 
-          if (!pos) {
-            return;
-          }
+            if (!pos) {
+              return;
+            }
 
-          this.ctx.globalCompositeOperation = 'difference';
-          this.ctx.fillStyle = `hsl(
+            this.ctx.globalCompositeOperation = 'difference';
+            this.ctx.fillStyle = `hsl(
             0, 0%, ${(Math.random() / 2 + 0.5) * 100}%
           )`;
 
-          this.ctx.fillRect(pos.x, 0, 1, this.height);
-          this.ctx.fillRect(0, pos.y, this.width, 1);
+            this.ctx.fillRect(pos.x, 0, 1, this.height);
+            this.ctx.fillRect(0, pos.y, this.width, 1);
 
-          this.ctx.globalCompositeOperation = 'source-over';
-          this.ctx.fillStyle = '#fff';
+            this.ctx.globalCompositeOperation = 'source-over';
+            this.ctx.fillStyle = '#fff';
 
-          this.ctx.fillRect(pos.x, pos.y, 1, 1);
-        }));
+            this.ctx.fillRect(pos.x, pos.y, 1, 1);
+          })
+        );
       };
     });
   }

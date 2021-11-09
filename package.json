@@ -7,7 +7,11 @@
   "author": "Ates Goral <ates@magnetiq.com>",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "format": "prettier --write ."
+  },
   "devDependencies": {
+    "prettier": "^2.4.1",
     "serve": "^13.0.2"
   }
 }

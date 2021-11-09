@@ -12,7 +12,7 @@ export class Pixel extends Canvas {
     return new Color({
       r: data[0] / 255,
       g: data[1] / 255,
-      b: data[2] / 255
+      b: data[2] / 255,
     });
   }
 }

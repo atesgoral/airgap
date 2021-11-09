@@ -26,7 +26,7 @@ export class Output extends Canvas {
       return;
     }
 
-    this.offscreenCtx.fillStyle = color.toCss()
+    this.offscreenCtx.fillStyle = color.toCss();
     this.offscreenCtx.fillRect(pos.x, pos.y, 1, 1);
 
     this.ctx.drawImage(this.offscreen, 0, 0);

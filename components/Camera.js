@@ -6,14 +6,15 @@ export class Camera extends Canvas {
 
     this.video.autoplay = true;
     this.video.srcObject = await navigator.mediaDevices.getUserMedia({
-      video: true
+      video: true,
     });
   }
 
   snapshot() {
     this.stretchImage(
       this.video,
-      this.video.videoWidth, this.video.videoHeight
+      this.video.videoWidth,
+      this.video.videoHeight
     );
   }
 }

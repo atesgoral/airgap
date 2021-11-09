@@ -21,10 +21,11 @@ export class Graph extends Canvas {
     for (let c of ['r', 'g', 'b']) {
       this.ctx.fillStyle = new Color({[c]: 1}).toCss();
       this.ctx.fillRect(
-        this.width - 1, (1 - color[c]) * (this.height - 10) + 10,
-        1, 1
+        this.width - 1,
+        (1 - color[c]) * (this.height - 10) + 10,
+        1,
+        1
       );
-
     }
     this.ctx.globalCompositeOperation = 'source-over';
   }

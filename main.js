@@ -37,7 +37,7 @@ window.addEventListener('load', async () => {
 
     signals = [
       {signal: calibrationSignal, isCalibrating: true},
-      {signal: imageSignal}
+      {signal: imageSignal},
     ];
   });
 

@@ -19,8 +19,14 @@ export class Canvas {
   stretchImage(image, width, height) {
     this.ctx.drawImage(
       image,
-      0, 0, width || image.width, height || image.height,
-      0, 0, this.width, this.height
+      0,
+      0,
+      width || image.width,
+      height || image.height,
+      0,
+      0,
+      this.width,
+      this.height
     );
   }
 
@@ -33,16 +39,20 @@ export class Canvas {
 
       this.ctx.drawImage(
         image,
-        (this.width - overflowWidth) / 2, 0,
-        overflowWidth, this.height
+        (this.width - overflowWidth) / 2,
+        0,
+        overflowWidth,
+        this.height
       );
     } else {
       const overflowHeight = this.width / imageAspectRatio;
 
       this.ctx.drawImage(
         image,
-        0, (this.height - overflowHeight) / 2,
-        this.width, overflowHeight
+        0,
+        (this.height - overflowHeight) / 2,
+        this.width,
+        overflowHeight
       );
     }
   }

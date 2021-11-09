@@ -3,6 +3,7 @@ import {Receiver} from './Receiver.js';
 import {Input} from './Input.js';
 import {Output} from './Output.js';
 import {Calibration} from './Calibration.js';
+import {Graph} from './Graph.js';
 
 let signals = [];
 
@@ -25,13 +26,7 @@ function *serpentineIterator(width, height) {
   }
 }
 
-function process(emitter, receiver, output, calibration) {
-  graph.width = graph.clientWidth;
-  graph.height = graph.clientHeight;
-
-  const graphCtx = graph.getContext('2d');
-  graphCtx.fillRect(0, 0, graph.width, graph.height);
-
+function process(emitter, receiver, output, calibration, graph) {
   function nextFrame(t) {
     requestAnimationFrame(nextFrame);
 
@@ -49,29 +44,17 @@ function process(emitter, receiver, output, calibration) {
       return;
     }
 
-    graphCtx.globalCompositeOperation = 'source-over';
-
-    graphCtx.drawImage(graph, -1, 0);
-
-    graphCtx.fillStyle = '#000';
-    graphCtx.fillRect(graph.width - 1, 0, 1, graph.height);
-
-    graphCtx.globalCompositeOperation = 'lighter';
+    graph.advance();
 
     if (original !== null) {
-      const originalRgb = `rgb(${original.r * 255}, ${original.g * 255}, ${original.b * 255})`;
 
       emitter.emit(original);
 
-      graphCtx.fillStyle = originalRgb;
-      graphCtx.fillRect(graph.width - 1, 0, 1, 10);
+      graph.plot(original, 0, 10);
 
-      graphCtx.fillStyle = '#f00';
-      graphCtx.fillRect(graph.width - 1, (1 - original.r) * graph.height / 2 + 10, 1, 1);
-      graphCtx.fillStyle = '#0f0';
-      graphCtx.fillRect(graph.width - 1, (1 - original.g) * graph.height / 2 + 10, 1, 1);
-      graphCtx.fillStyle = '#00f';
-      graphCtx.fillRect(graph.width - 1, (1 - original.b) * graph.height / 2 + 10, 1, 1);
+      graph.plot({r: 1}, (1 - original.r) * graph.height / 2 + 10);
+      graph.plot({g: 1}, (1 - original.g) * graph.height / 2 + 10);
+      graph.plot({b: 1}, (1 - original.b) * graph.height / 2 + 10);
     }
 
     if (isCalibrating) {
@@ -83,41 +66,16 @@ function process(emitter, receiver, output, calibration) {
     if (!isCalibrating) {
       output.render(sample);
 
-      const cssColor = `rgb(${sample.r * 255}, ${sample.g * 255}, ${sample.b * 255})`;
-
-      graphCtx.fillStyle = cssColor;
-      graphCtx.fillRect(graph.width - 1, graph.height / 2, 1, 10);
+      graph.plot(sample, graph.height / 2, 10);
     }
 
-    graphCtx.fillStyle = '#800';
-    graphCtx.fillRect(graph.width - 1, (2 - sample.r) * graph.height / 2 + 20, 1, 1);
-    graphCtx.fillStyle = '#080';
-    graphCtx.fillRect(graph.width - 1, (2 - sample.g) * graph.height / 2 + 20, 1, 1);
-    graphCtx.fillStyle = '#008';
-    graphCtx.fillRect(graph.width - 1, (2 - sample.b) * graph.height / 2 + 20, 1, 1);
+    graph.plot({r: 0.5}, (2 - sample.r) * graph.height / 2 + 20);
+    graph.plot({g: 0.5}, (2 - sample.g) * graph.height / 2 + 20);
+    graph.plot({b: 0.5}, (2 - sample.b) * graph.height / 2 + 20);
 
-    graphCtx.fillStyle = '#f00';
-    graphCtx.fillRect(graph.width - 1, (2 - normalized.r) * graph.height / 2 + 20, 1, 1);
-    graphCtx.fillStyle = '#0f0';
-    graphCtx.fillRect(graph.width - 1, (2 - normalized.g) * graph.height / 2 + 20, 1, 1);
-    graphCtx.fillStyle = '#00f';
-    graphCtx.fillRect(graph.width - 1, (2 - normalized.b) * graph.height / 2 + 20, 1, 1);
-
-    // graphCtx.fillStyle = 'rgba(255, 0, 0, 1)';
-    // graphCtx.fillRect(
-    //   0, (2 - calibration.max.r) * graph.height / 2,
-    //   3, (calibration.max.r - calibration.min.r) * graph.height / 2
-    // );
-    // graphCtx.fillStyle = 'rgba(0, 255, 0, 1)';
-    // graphCtx.fillRect(
-    //   3, (2 - calibration.max.g) * graph.height / 2,
-    //   3, (calibration.max.g - calibration.min.g) * graph.height / 2
-    // );
-    // graphCtx.fillStyle = 'rgba(0, 0, 255, 1)';
-    // graphCtx.fillRect(
-    //   6, (2 - calibration.max.b) * graph.height / 2,
-    //   3, (calibration.max.b - calibration.min.b) * graph.height / 2
-    // );
+    graph.plot({r: 1}, (2 - normalized.r) * graph.height / 2 + 20);
+    graph.plot({g: 1}, (2 - normalized.g) * graph.height / 2 + 20);
+    graph.plot({b: 1}, (2 - normalized.b) * graph.height / 2 + 20);
   }
 
   requestAnimationFrame(nextFrame);
@@ -141,6 +99,7 @@ window.addEventListener('load', async () => {
   const input = new Input($('#input'));
   const output = new Output($('#output'));
   const calibration = new Calibration();
+  const graph = new Graph($('#graph'));
 
   await receiver.init();
 
@@ -152,6 +111,7 @@ window.addEventListener('load', async () => {
     const imageSignal = await input.init(imageUrl, iterator);
 
     output.init(iterator);
+    graph.init();
 
     signals = [
       {signal: calibrationSignal, isCalibrating: true},
@@ -164,5 +124,5 @@ window.addEventListener('load', async () => {
     document.body.requestFullscreen({navigationUI: 'hide'});
   });
 
-  process(emitter, receiver, output, calibration);
+  process(emitter, receiver, output, calibration, graph);
 });

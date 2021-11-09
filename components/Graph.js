@@ -12,10 +12,24 @@ export class Graph extends Canvas {
     this.ctx.fillRect(this.width - 1, 0, 1, this.height);
   }
 
-  plot(color, y, h = 1) {
-    this.ctx.globalCompositeOperation = 'lighter';
+  plot(color) {
     this.ctx.fillStyle = color.toCss();
-    this.ctx.fillRect(this.width - 1, y, 1, h);
+    this.ctx.fillRect(this.width - 1, 0, 1, 10);
+
+    this.ctx.globalCompositeOperation = 'lighter';
+
+    for (let c of ['r', 'g', 'b']) {
+      this.ctx.fillStyle = new Color({[c]: 1}).toCss();
+      this.ctx.fillRect(
+        this.width - 1, (1 - color[c]) * (this.height - 10) + 10,
+        1, 1
+      );
+
+    }
     this.ctx.globalCompositeOperation = 'source-over';
+  }
+
+  plotValue(color, value) {
+    return this;
   }
 }

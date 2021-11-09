@@ -17,7 +17,8 @@ window.addEventListener('load', async () => {
   const input = new Input($('#input').get());
   const output = new Output($('#output').get());
   const calibration = new Calibration();
-  const graph = new Graph($('#graph').get());
+  const inputGraph = new Graph($('#input-graph').get());
+  const outputGraph = new Graph($('#output-graph').get());
 
   await camera.init();
 
@@ -31,7 +32,9 @@ window.addEventListener('load', async () => {
     const imageSignal = await input.init(imageUrl, scanner);
 
     output.init(scanner);
-    graph.init();
+
+    inputGraph.init();
+    outputGraph.init();
 
     signals = [
       {signal: calibrationSignal, isCalibrating: true},
@@ -64,37 +67,22 @@ window.addEventListener('load', async () => {
       return;
     }
 
-    graph.advance();
+    inputGraph.advance();
+    outputGraph.advance();
 
     if (original !== null) {
       emitter.emit(original);
-
-      graph.plot(original, 0, 10);
-
-      graph.plot(new Color({r: 1}), (1 - original.r) * graph.height / 2 + 10);
-      graph.plot(new Color({g: 1}), (1 - original.g) * graph.height / 2 + 10);
-      graph.plot(new Color({b: 1}), (1 - original.b) * graph.height / 2 + 10);
+      inputGraph.plot(original);
     }
 
     if (isCalibrating) {
       calibration.train(sample);
+      outputGraph.plot(sample);
+    } else {
+      const normalized = calibration.normalize(sample);
+      output.render(normalized);
+      outputGraph.plot(normalized);
     }
-
-    const normalized = calibration.normalize(sample);
-
-    if (!isCalibrating) {
-      output.render(sample);
-
-      graph.plot(sample, graph.height / 2, 10);
-    }
-
-    graph.plot(new Color({r: 0.5}), (2 - sample.r) * graph.height / 2 + 20);
-    graph.plot(new Color({g: 0.5}), (2 - sample.g) * graph.height / 2 + 20);
-    graph.plot(new Color({b: 0.5}), (2 - sample.b) * graph.height / 2 + 20);
-
-    graph.plot(new Color({r: 1}), (2 - normalized.r) * graph.height / 2 + 20);
-    graph.plot(new Color({g: 1}), (2 - normalized.g) * graph.height / 2 + 20);
-    graph.plot(new Color({b: 1}), (2 - normalized.b) * graph.height / 2 + 20);
   }
 
   requestAnimationFrame(nextFrame);

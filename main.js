@@ -299,12 +299,12 @@ function $(selector) {
 }
 
 async function init() {
-  const receiver = new Receiver();
-
-  await receiver.init(
+  const receiver = new Receiver(
     $('#camera'),
     $('#pixel')
   );
+
+  await receiver.init();
 
   $('#transmit').addEventListener('click', async () => {
     const imageUrl = 'patterns/tv-test-patterns-02.jpeg';

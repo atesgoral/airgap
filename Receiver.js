@@ -1,26 +1,24 @@
 export class Receiver {
-  async init(cameraCanvas, pixelCanvas) {
+  constructor(cameraCanvas, pixelCanvas) {
     this.cameraCanvas = cameraCanvas;
     this.pixelCanvas = pixelCanvas;
+    this.cameraCtx = cameraCanvas.getContext('2d');
+    this.pixelCtx = pixelCanvas.getContext('2d');
 
     cameraCanvas.width = cameraCanvas.clientWidth;
     cameraCanvas.height = cameraCanvas.clientHeight;
 
-    this.cameraCtx = cameraCanvas.getContext('2d');
-
     pixelCanvas.width = 1;
     pixelCanvas.height = 1;
+  }
 
-    this.pixelCtx = pixelCanvas.getContext('2d');
+  async init() {
+    this.video = document.createElement('video');
 
-    const video = document.createElement('video');
-
-    video.autoplay = true;
-    video.srcObject = await navigator.mediaDevices.getUserMedia({
+    this.video.autoplay = true;
+    this.video.srcObject = await navigator.mediaDevices.getUserMedia({
       video: true
     });
-
-    this.video = video;
   }
 
   sample() {

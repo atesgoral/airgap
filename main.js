@@ -267,22 +267,20 @@ async function loadImage(url, iterator) {
 
       const inputCtx = input.getContext('2d');
 
-      const imageAspect = image.width / image.height;
-      const inputAspect = input.width / input.height;
+      function pasteImage() {
+        const imageAspect = image.width / image.height;
+        const inputAspect = input.width / input.height;
 
-      if (imageAspect >= inputAspect) {
-        const overflowWidth = input.height * image.width / image.height;
+        if (imageAspect >= inputAspect) {
+          const overflowWidth = input.height * image.width / image.height;
 
-        function pasteImage() {
           inputCtx.drawImage(
             image,
             (input.width - overflowWidth) / 2, 0, overflowWidth, input.height
           );
-        }
-      } else {
-        const overflowHeight = input.width * image.height / image.width;
+        } else {
+          const overflowHeight = input.width * image.height / image.width;
 
-        function pasteImage() {
           inputCtx.drawImage(
             image,
             0, (input.height - overflowHeight) / 2, input.width, overflowHeight
@@ -303,11 +301,13 @@ async function loadImage(url, iterator) {
           return;
         }
 
-        inputCtx.fillStyle = `hsla(0, 0%, ${(0.5 + Math.random() * 0.5) * 100}%, 0.75)`;
+        inputCtx.globalCompositeOperation = 'difference';
+        inputCtx.fillStyle = `hsl(0, 0%, ${(Math.random() / 2 + 0.5) * 100}%)`;
 
         inputCtx.fillRect(x, 0, 1, input.height);
         inputCtx.fillRect(0, y, input.width, 1);
 
+        inputCtx.globalCompositeOperation = 'source-over';
         inputCtx.fillStyle = '#fff';
 
         inputCtx.fillRect(x, y, 1, 1);
@@ -333,7 +333,7 @@ async function init() {
     const iterator = true
       ? scanlineIterator
       : serpentineIterator;
-    const imageUrl = 'patterns/Philips_PM5544.svg.png';
+    const imageUrl = 'patterns/tv-test-patterns-02.jpeg';
 
     const imageSignal = await loadImage(imageUrl, iterator);
     outputRenderer.init(output, iterator);

@@ -14,6 +14,9 @@ body {
   margin: 0 auto;
   left: 50%;
   margin-left: -150px;
+  background: black;
+  border: 1px solid black;
+  z-index: 999;
 }
 #graph {
   background: #222;
@@ -47,17 +50,17 @@ body {
   bottom: 230px;
   left: 0px;
   margin: 10px;
-  width: 256px;
-  height: 256px;
+  width: 128px;
+  height: 128px;
   border: 1px solid #222;
 }
 #output {
   position: absolute;
   bottom: 230px;
-  left: calc(256px + 10px);
+  left: calc(128px + 10px);
   margin: 10px;
-  width: 256px;
-  height: 256px;
+  width: 128px;
+  height: 128px;
   border: 1px solid #222;
 }
 #buttons {
@@ -69,7 +72,7 @@ body {
 #buttons > button {
   background: #222;
   color: #ccc;
-  border: 1px solid #ccc;
+  border: 1px solid #888;
   box-sizing: border-box;
   padding: 5px 10px;
   cursor: pointer;

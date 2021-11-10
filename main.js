@@ -37,7 +37,7 @@ window.addEventListener('load', async () => {
   let signals = [];
 
   $('#transmit').click(async () => {
-    const imageUrl = 'patterns/tv-test-patterns-02.jpeg';
+    const imageUrl = 'patterns/kodim23.png';
     const scanner = scanners.raster;
 
     const calibrationSignal = calibration.init(5);

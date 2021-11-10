@@ -53,17 +53,17 @@ body {
   bottom: 220px;
   left: 0px;
   margin: 10px;
-  width: 128px;
-  height: 128px;
+  width: 256px;
+  height: 256px;
   border: 1px solid #222;
 }
 #output {
   position: absolute;
   bottom: 220px;
-  left: calc(128px + 10px);
+  left: calc(256px + 10px);
   margin: 10px;
-  width: 128px;
-  height: 128px;
+  width: 256px;
+  height: 256px;
   border: 1px solid #222;
 }
 #buttons {

@@ -10,7 +10,9 @@ export class Canvas {
     /** @readonly */
     this.canvas = canvas;
     /** @protected @readonly */
-    this.ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
+    this.ctx = /** @type {CanvasRenderingContext2D} */ (
+      canvas.getContext('2d')
+    );
 
     /** @readonly */
     this.width = canvas.width = intrinsicWidth || canvas.clientWidth;

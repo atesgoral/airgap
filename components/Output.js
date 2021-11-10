@@ -17,7 +17,9 @@ export class Output extends Canvas {
     this.offscreen.width = this.width;
     this.offscreen.height = this.height;
 
-    this.offscreenCtx = /** @type {CanvasRenderingContext2D} */ (this.offscreen.getContext('2d'));
+    this.offscreenCtx = /** @type {CanvasRenderingContext2D} */ (
+      this.offscreen.getContext('2d')
+    );
   }
 
   /**
@@ -25,7 +27,6 @@ export class Output extends Canvas {
    */
   init(scanner) {
     this.clear();
-
 
     this.scan = scanner.scan(this.width, this.height);
   }

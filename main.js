@@ -12,14 +12,24 @@ import {Graph} from './components/Graph.js';
 /** @typedef {import('./lib/Color.js').Color} Color */
 
 window.addEventListener('load', async () => {
-  const emitter = new Emitter(/** @type {HTMLCanvasElement} */ ($('#emitter').get()));
-  const camera = new Camera(/** @type {HTMLCanvasElement} */ ($('#camera').get()));
+  const emitter = new Emitter(
+    /** @type {HTMLCanvasElement} */ ($('#emitter').get())
+  );
+  const camera = new Camera(
+    /** @type {HTMLCanvasElement} */ ($('#camera').get())
+  );
   const pixel = new Pixel(/** @type {HTMLCanvasElement} */ ($('#pixel').get()));
   const input = new Input(/** @type {HTMLCanvasElement} */ ($('#input').get()));
-  const output = new Output(/** @type {HTMLCanvasElement} */ ($('#output').get()));
+  const output = new Output(
+    /** @type {HTMLCanvasElement} */ ($('#output').get())
+  );
   const calibration = new Calibration();
-  const inputGraph = new Graph(/** @type {HTMLCanvasElement} */ ($('#input-graph').get()));
-  const outputGraph = new Graph(/** @type {HTMLCanvasElement} */ ($('#output-graph').get()));
+  const inputGraph = new Graph(
+    /** @type {HTMLCanvasElement} */ ($('#input-graph').get())
+  );
+  const outputGraph = new Graph(
+    /** @type {HTMLCanvasElement} */ ($('#output-graph').get())
+  );
 
   await camera.init();
 

@@ -1,6 +1,14 @@
 import {Canvas} from './Canvas.js';
 import {Color} from '../lib/Color.js';
 
+/** @typedef {{x: number; y: number}} Point */
+/** @typedef {{scan: (width: number, height: number) => Generator<Point>}} Scanner */
+
+/**
+ * @param {ImageData} imageData
+ * @param {Scanner} scanner
+ * @param {(pos?: Point) => void} updatePosition
+ */
 function* imageSignal(imageData, scanner, updatePosition) {
   const scan = scanner.scan(imageData.width, imageData.height);
 
@@ -21,6 +29,10 @@ function* imageSignal(imageData, scanner, updatePosition) {
 }
 
 export class Input extends Canvas {
+  /**
+   * @param {string} url
+   * @param {*} scanner
+   */
   async init(url, scanner) {
     const image = new Image();
 

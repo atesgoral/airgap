@@ -2,6 +2,9 @@ import {Canvas} from './Canvas.js';
 import {Color} from '../lib/Color.js';
 
 export class Pixel extends Canvas {
+  /**
+   * @param {HTMLCanvasElement} canvas
+   */
   constructor(canvas) {
     super(canvas, 1, 1);
   }

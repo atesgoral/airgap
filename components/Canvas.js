@@ -1,9 +1,20 @@
-export class Canvas {
-  constructor(canvas, intrinsicWidth, intrinsicHeight) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
+/** @typedef {import('../lib/Color.js').Color} Color */
 
+export class Canvas {
+  /**
+   * @param {HTMLCanvasElement} canvas
+   * @param {number} [intrinsicWidth]
+   * @param {number} [intrinsicHeight]
+   */
+  constructor(canvas, intrinsicWidth, intrinsicHeight) {
+    /** @readonly */
+    this.canvas = canvas;
+    /** @protected @readonly */
+    this.ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
+
+    /** @readonly */
     this.width = canvas.width = intrinsicWidth || canvas.clientWidth;
+    /** @readonly */
     this.height = canvas.height = intrinsicHeight || canvas.clientHeight;
   }
 
@@ -11,11 +22,19 @@ export class Canvas {
     this.ctx.clearRect(0, 0, this.width, this.height);
   }
 
+  /**
+   * @param {Color} color
+   */
   fill(color) {
     this.ctx.fillStyle = color.toCss();
     this.ctx.fillRect(0, 0, this.width, this.height);
   }
 
+  /**
+   * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} image
+   * @param {number} [width]
+   * @param {number} [height]
+   */
   stretchImage(image, width, height) {
     this.ctx.drawImage(
       image,
@@ -30,6 +49,9 @@ export class Canvas {
     );
   }
 
+  /**
+   * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} image
+   */
   coverImage(image) {
     const imageAspectRatio = image.width / image.height;
     const inputAspectRatio = this.width / this.height;

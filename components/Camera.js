@@ -1,10 +1,19 @@
 import {Canvas} from './Canvas.js';
 
 export class Camera extends Canvas {
-  async init() {
-    this.video = document.createElement('video');
+  /**
+   * @param {HTMLCanvasElement} canvas
+   * @param {number} [width]
+   * @param {number} [height]
+   */
+  constructor(canvas, width, height) {
+    super(canvas, width, height);
 
+    this.video = document.createElement('video');
     this.video.autoplay = true;
+  }
+
+  async init() {
     this.video.srcObject = await navigator.mediaDevices.getUserMedia({
       video: true,
     });

@@ -9,6 +9,7 @@
   "private": true,
   "scripts": {
     "format": "prettier --write .",
+    "format-check": "prettier --check .",
     "type-check": "tsc"
   },
   "devDependencies": {

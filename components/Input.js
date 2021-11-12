@@ -28,45 +28,51 @@ function* imageSignal(imageData, scanner, updatePosition) {
   updatePosition();
 }
 
+/**
+ * @param {string} url
+ * @returns {Promise<HTMLImageElement>}
+ */
+async function loadImage(url) {
+  const image = new Image();
+
+  image.src = url;
+
+  return new Promise((resolve) => {
+    image.onload = () => resolve(image);
+  });
+}
+
 export class Input extends Canvas {
   /**
    * @param {string} url
    * @param {*} scanner
    */
   async init(url, scanner) {
-    const image = new Image();
+    const image = await loadImage(url);
 
-    image.src = url;
+    this.coverImage(image);
 
-    return new Promise((resolve) => {
-      image.onload = () => {
-        this.coverImage(image);
+    const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
 
-        const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
+    return imageSignal(imageData, scanner, (pos) => {
+      this.coverImage(image);
 
-        resolve(
-          imageSignal(imageData, scanner, (pos) => {
-            this.coverImage(image);
+      if (!pos) {
+        return;
+      }
 
-            if (!pos) {
-              return;
-            }
+      this.ctx.globalCompositeOperation = 'difference';
+      this.ctx.fillStyle = `hsl(
+        0, 0%, ${(Math.random() / 2 + 0.5) * 100}%
+      )`;
 
-            this.ctx.globalCompositeOperation = 'difference';
-            this.ctx.fillStyle = `hsl(
-            0, 0%, ${(Math.random() / 2 + 0.5) * 100}%
-          )`;
+      this.ctx.fillRect(pos.x, 0, 1, this.height);
+      this.ctx.fillRect(0, pos.y, this.width, 1);
 
-            this.ctx.fillRect(pos.x, 0, 1, this.height);
-            this.ctx.fillRect(0, pos.y, this.width, 1);
+      this.ctx.globalCompositeOperation = 'source-over';
+      this.ctx.fillStyle = '#fff';
 
-            this.ctx.globalCompositeOperation = 'source-over';
-            this.ctx.fillStyle = '#fff';
-
-            this.ctx.fillRect(pos.x, pos.y, 1, 1);
-          })
-        );
-      };
+      this.ctx.fillRect(pos.x, pos.y, 1, 1);
     });
   }
 }

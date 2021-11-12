@@ -1,4 +1,5 @@
 import {$} from './lib/$.js';
+import {raf} from './lib/raf.js';
 import * as scanners from './lib/scanners.js';
 import {Calibration} from './lib/Calibration.js';
 
@@ -58,9 +59,7 @@ window.addEventListener('load', async () => {
     document.body.requestFullscreen({navigationUI: 'hide'});
   });
 
-  function nextFrame() {
-    requestAnimationFrame(nextFrame);
-
+  raf(() => {
     camera.snapshot();
 
     pixel.stretchImage(camera.canvas);
@@ -95,7 +94,5 @@ window.addEventListener('load', async () => {
       output.render(normalized);
       outputGraph.plot(normalized);
     }
-  }
-
-  requestAnimationFrame(nextFrame);
+  });
 });

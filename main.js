@@ -9,8 +9,11 @@ import {Pixel} from './components/Pixel.js';
 import {Input} from './components/Input.js';
 import {Output} from './components/Output.js';
 import {Graph} from './components/Graph.js';
+import {Timing} from './lib/Timing.js';
 
 /** @typedef {import('./lib/Color.js').Color} Color */
+
+const imageUrl = 'patterns/kodim23.png';
 
 window.addEventListener('load', async () => {
   const emitter = new Emitter(
@@ -24,6 +27,7 @@ window.addEventListener('load', async () => {
   const output = new Output(
     /** @type {HTMLCanvasElement} */ ($('#output').get())
   );
+  const timing = new Timing();
   const calibration = new Calibration();
   const inputGraph = new Graph(
     /** @type {HTMLCanvasElement} */ ($('#input-graph').get())
@@ -44,17 +48,15 @@ window.addEventListener('load', async () => {
 
     const scanner = scanners.raster;
 
-    const calibrationSignal = calibration.init(5);
-    const imageSignal = await input.init(imageUrl, scanner);
-
     output.init(scanner);
 
     inputGraph.init();
     outputGraph.init();
 
     signals = [
-      {signal: calibrationSignal, isCalibrating: true},
-      {signal: imageSignal},
+      {signal: timing.init(1), isTiming: true},
+      {signal: calibration.init(5), isCalibrating: true},
+      {signal: await input.init(imageUrl, scanner)},
     ];
 
     $('#transmit').enable();
@@ -67,17 +69,19 @@ window.addEventListener('load', async () => {
   });
 
   raf(() => {
+    inputGraph.advance();
+    outputGraph.advance();
+
     camera.snapshot();
-
     pixel.stretchImage(camera.canvas);
-
-    const sample = pixel.read();
 
     if (!signals.length) {
       return;
     }
 
-    const {signal, isCalibrating} = signals[0];
+    const sample = pixel.read();
+
+    const {signal, isTiming, isCalibrating} = signals[0];
     const {value: original, done} = signal.next();
 
     if (done) {
@@ -85,15 +89,15 @@ window.addEventListener('load', async () => {
       return;
     }
 
-    inputGraph.advance();
-    outputGraph.advance();
-
     if (original !== null) {
       emitter.emit(original);
       inputGraph.plot(original);
     }
 
-    if (isCalibrating) {
+    if (isTiming) {
+      timing.train(sample);
+      outputGraph.plot(sample);
+    } else if (isCalibrating) {
       calibration.train(sample);
       outputGraph.plot(sample);
     } else {

@@ -6,6 +6,7 @@ body {
   margin: 0;
   padding: 0;
   background: #000;
+  font-size: 100%;
 }
 #emitter {
   width: 300px;
@@ -81,6 +82,10 @@ body {
   cursor: pointer;
   margin: 0;
   margin-right: 10px;
+  font-size: 0.75rem;
+  line-height: 15px;
+  height: 30px;
+  font-family: monospace;
 }
 #buttons > button[disabled] {
   opacity: 0.5;
@@ -89,4 +94,13 @@ body {
 #buttons > button:not([disabled]):hover {
   color: #eee;
   border-color: #eee;
+}
+#status {
+  position: absolute;
+  color: #ccc;
+  top: 50px;
+  left: 10px;
+  font-size: 0.75rem;
+  line-height: 15px;
+  font-family: monospace;
 }

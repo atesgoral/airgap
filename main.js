@@ -1,15 +1,16 @@
 import {$} from './lib/$.js';
 import {raf} from './lib/raf.js';
 import * as scanners from './lib/scanners.js';
+import {Timing} from './lib/Timing.js';
 import {Calibration} from './lib/Calibration.js';
 
+import {Status} from './components/Status.js';
 import {Emitter} from './components/Emitter.js';
 import {Camera} from './components/Camera.js';
 import {Pixel} from './components/Pixel.js';
 import {Input} from './components/Input.js';
 import {Output} from './components/Output.js';
 import {Graph} from './components/Graph.js';
-import {Timing} from './lib/Timing.js';
 
 /** @typedef {import('./lib/Color.js').Color} Color */
 
@@ -17,6 +18,7 @@ import {Timing} from './lib/Timing.js';
 const imageUrl = 'patterns/Philips_PM5544.svg.png';
 
 window.addEventListener('load', async () => {
+  const status = new Status(/** @type {HTMLPreElement} */ ($('#status').get()));
   const emitter = new Emitter(
     /** @type {HTMLCanvasElement} */ ($('#emitter').get())
   );
@@ -40,6 +42,8 @@ window.addEventListener('load', async () => {
   await camera.init();
 
   $('#transmit').enable();
+
+  status.set('READY');
 
   /** @type {Array<{signal: Generator<Color>; isTiming?: boolean; isCalibrating?: boolean}>} */
   let signals = [];
@@ -77,6 +81,7 @@ window.addEventListener('load', async () => {
     pixel.stretchImage(camera.canvas);
 
     if (!signals.length) {
+      status.set('READY');
       return;
     }
 
@@ -94,12 +99,15 @@ window.addEventListener('load', async () => {
     inputGraph.plot(original);
 
     if (isTiming) {
+      status.set('TIMING');
       timing.train(sample);
       outputGraph.plot(sample);
     } else if (isCalibrating) {
+      status.set('CALIBRATING');
       calibration.train(sample);
       outputGraph.plot(sample);
     } else if (!timing.wait()) {
+      status.set('TRANSMITTING');
       const normalized = calibration.normalize(sample);
       output.render(normalized);
       outputGraph.plot(normalized);

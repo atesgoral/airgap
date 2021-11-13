@@ -1,3 +1,4 @@
+import {$} from './lib/$.js';
 import {raf} from './lib/raf.js';
 import * as scanners from './lib/scanners.js';
 import {Timing} from './lib/Timing.js';
@@ -16,18 +17,6 @@ import {Button} from './components/Button.js';
 
 // const imageUrl = 'patterns/kodim23.png';
 const imageUrl = 'patterns/Philips_PM5544.svg.png';
-
-/**
- * @template T
- * @param {string} selector
- */
-function $(selector) {
-  const el = /** @type {unknown} */ (document.querySelector(selector));
-  if (!el) {
-    throw new Error('Element not found');
-  }
-  return /** @type {T} */ (el);
-}
 
 window.addEventListener('load', async () => {
   const status = new Status($('#status'));

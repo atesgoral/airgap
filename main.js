@@ -34,11 +34,14 @@ window.addEventListener('load', async () => {
 
   await camera.init();
 
-  /** @type {Array<{signal: Generator<Color>; isCalibrating?: boolean}>} */
+  $('#transmit').enable();
+
+  /** @type {Array<{signal: Generator<Color>; isTiming?: boolean; isCalibrating?: boolean}>} */
   let signals = [];
 
   $('#transmit').click(async () => {
-    const imageUrl = 'patterns/kodim23.png';
+    $('#transmit').disable();
+
     const scanner = scanners.raster;
 
     const calibrationSignal = calibration.init(5);
@@ -53,10 +56,14 @@ window.addEventListener('load', async () => {
       {signal: calibrationSignal, isCalibrating: true},
       {signal: imageSignal},
     ];
+
+    $('#transmit').enable();
   });
 
-  $('#fullscreen').click(() => {
-    document.body.requestFullscreen({navigationUI: 'hide'});
+  $('#fullscreen').click(async () => {
+    $('#fullscreen').disable();
+    await document.body.requestFullscreen({navigationUI: 'hide'});
+    $('#fullscreen').enable();
   });
 
   raf(() => {

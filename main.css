@@ -82,7 +82,11 @@ body {
   margin: 0;
   margin-right: 10px;
 }
-#buttons > button:hover {
+#buttons > button[disabled] {
+  opacity: 0.5;
+  cursor: wait;
+}
+#buttons > button:not([disabled]):hover {
   color: #eee;
   border-color: #eee;
 }

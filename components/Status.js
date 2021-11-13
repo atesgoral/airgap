@@ -2,10 +2,10 @@
 
 export class Status {
   /**
-   * @param {HTMLPreElement} el
+   * @param {HTMLPreElement} pre
    */
-  constructor(el) {
-    this.el = el;
+  constructor(pre) {
+    this.pre = pre;
     /** @type {State} */
     this.state = 'LOADING';
     this.update();
@@ -41,6 +41,6 @@ export class Status {
         break;
     }
 
-    this.el.innerHTML = lines.join('\n');
+    this.pre.innerHTML = lines.join('\n');
   }
 }

@@ -13,7 +13,8 @@ import {Timing} from './lib/Timing.js';
 
 /** @typedef {import('./lib/Color.js').Color} Color */
 
-const imageUrl = 'patterns/kodim23.png';
+// const imageUrl = 'patterns/kodim23.png';
+const imageUrl = 'patterns/Philips_PM5544.svg.png';
 
 window.addEventListener('load', async () => {
   const emitter = new Emitter(
@@ -89,10 +90,8 @@ window.addEventListener('load', async () => {
       return;
     }
 
-    if (original !== null) {
-      emitter.emit(original);
-      inputGraph.plot(original);
-    }
+    emitter.emit(original);
+    inputGraph.plot(original);
 
     if (isTiming) {
       timing.train(sample);
@@ -100,7 +99,7 @@ window.addEventListener('load', async () => {
     } else if (isCalibrating) {
       calibration.train(sample);
       outputGraph.plot(sample);
-    } else {
+    } else if (!timing.wait()) {
       const normalized = calibration.normalize(sample);
       output.render(normalized);
       outputGraph.plot(normalized);

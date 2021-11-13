@@ -1,4 +1,3 @@
-import {$} from './lib/$.js';
 import {raf} from './lib/raf.js';
 import * as scanners from './lib/scanners.js';
 import {Timing} from './lib/Timing.js';
@@ -11,45 +10,58 @@ import {Pixel} from './components/Pixel.js';
 import {Input} from './components/Input.js';
 import {Output} from './components/Output.js';
 import {Graph} from './components/Graph.js';
+import {Button} from './components/Button.js';
 
 /** @typedef {import('./lib/Color.js').Color} Color */
 
 // const imageUrl = 'patterns/kodim23.png';
 const imageUrl = 'patterns/Philips_PM5544.svg.png';
 
+/**
+ * @template T
+ * @param {string} selector
+ */
+function $(selector) {
+  const el = /** @type {unknown} */ (document.querySelector(selector));
+  if (!el) {
+    throw new Error('Element not found');
+  }
+  return /** @type {T} */ (el);
+}
+
 window.addEventListener('load', async () => {
-  const status = new Status(/** @type {HTMLPreElement} */ ($('#status').get()));
-  const emitter = new Emitter(
-    /** @type {HTMLCanvasElement} */ ($('#emitter').get())
-  );
-  const camera = new Camera(
-    /** @type {HTMLCanvasElement} */ ($('#camera').get())
-  );
-  const pixel = new Pixel(/** @type {HTMLCanvasElement} */ ($('#pixel').get()));
-  const input = new Input(/** @type {HTMLCanvasElement} */ ($('#input').get()));
-  const output = new Output(
-    /** @type {HTMLCanvasElement} */ ($('#output').get())
-  );
+  const status = new Status($('#status'));
+  const emitter = new Emitter($('#emitter'));
+  const camera = new Camera($('#camera'));
+  const pixel = new Pixel($('#pixel'));
+  const input = new Input($('#input'));
+  const output = new Output($('#output'));
+  const inputGraph = new Graph($('#input-graph'));
+  const outputGraph = new Graph($('#output-graph'));
+  const transmit = new Button($('#transmit'));
+  const fullscreen = new Button($('#fullscreen'));
+
   const timing = new Timing();
   const calibration = new Calibration();
-  const inputGraph = new Graph(
-    /** @type {HTMLCanvasElement} */ ($('#input-graph').get())
-  );
-  const outputGraph = new Graph(
-    /** @type {HTMLCanvasElement} */ ($('#output-graph').get())
-  );
 
   await camera.init();
 
-  $('#transmit').enable();
+  transmit.enable();
 
   status.set('READY');
 
   /** @type {Array<{signal: Generator<Color>; isTiming?: boolean; isCalibrating?: boolean}>} */
   let signals = [];
+  let isFullscreen = false;
 
-  $('#transmit').click(async () => {
-    $('#transmit').disable();
+  transmit.onClick(async () => {
+    if (signals.length) {
+      transmit.setTitle('Transmit');
+      signals = [];
+      return;
+    }
+
+    transmit.disable();
 
     const scanner = scanners.raster;
 
@@ -64,13 +76,24 @@ window.addEventListener('load', async () => {
       {signal: await input.init(imageUrl, scanner)},
     ];
 
-    $('#transmit').enable();
+    transmit.setTitle('Stop');
+    transmit.enable();
   });
 
-  $('#fullscreen').click(async () => {
-    $('#fullscreen').disable();
-    await document.body.requestFullscreen({navigationUI: 'hide'});
-    $('#fullscreen').enable();
+  fullscreen.onClick(async () => {
+    fullscreen.disable();
+
+    if (isFullscreen) {
+      await document.exitFullscreen();
+    } else {
+      await document.body.requestFullscreen({navigationUI: 'hide'});
+    }
+
+    isFullscreen = !isFullscreen;
+
+    fullscreen.setTitle(isFullscreen ? 'Exit fullscreen' : 'Fullscreen');
+
+    fullscreen.enable();
   });
 
   raf(() => {

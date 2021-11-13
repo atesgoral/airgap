@@ -7,11 +7,15 @@ import {Canvas} from './Canvas.js';
 export class Output extends Canvas {
   /**
    * @param {HTMLCanvasElement} canvas
-   * @param {number} [width]
-   * @param {number} [height]
    */
-  constructor(canvas, width, height) {
-    super(canvas, width, height);
+  constructor(canvas) {
+    super(canvas);
+
+    this.offscreen = new Canvas(
+      document.createElement('canvas'),
+      this.width,
+      this.height
+    );
   }
 
   /**
@@ -25,7 +29,7 @@ export class Output extends Canvas {
   /**
    * @param {Color} color
    */
-  render(color) {
+  plot(color) {
     if (!this.scan) {
       return;
     }
@@ -37,7 +41,7 @@ export class Output extends Canvas {
       return;
     }
 
-    this.ctx.fillStyle = color.toCss();
-    this.ctx.fillRect(pos.x, pos.y, 1, 1);
+    this.offscreen.point(color, pos);
+    this.stretchImage(this.offscreen.canvas);
   }
 }

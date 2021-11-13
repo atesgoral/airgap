@@ -128,7 +128,7 @@ window.addEventListener('load', async () => {
     } else if (!timing.wait()) {
       status.set('Transmitting...');
       const normalized = calibration.normalize(sample);
-      output.render(normalized);
+      output.plot(normalized);
       outputGraph.plot(normalized);
     }
   });

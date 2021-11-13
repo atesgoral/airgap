@@ -1,4 +1,5 @@
 /** @typedef {import('../lib/Color.js').Color} Color */
+/** @typedef {{x: number; y: number}} Point */
 
 export class Canvas {
   /**
@@ -26,10 +27,28 @@ export class Canvas {
 
   /**
    * @param {Color} color
+   * @param {Point} pos
+   * @param {number} width
+   * @param {number} height
+   */
+  rect(color, pos, width, height) {
+    this.ctx.fillStyle = color.toCss();
+    this.ctx.fillRect(pos.x, pos.y, width, height);
+  }
+
+  /**
+   * @param {Color} color
+   * @param {Point} pos
+   */
+  point(color, pos) {
+    this.rect(color, pos, 1, 1);
+  }
+
+  /**
+   * @param {Color} color
    */
   fill(color) {
-    this.ctx.fillStyle = color.toCss();
-    this.ctx.fillRect(0, 0, this.width, this.height);
+    this.rect(color, {x: 0, y: 0}, this.width, this.height);
   }
 
   /**

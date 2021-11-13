@@ -62,6 +62,7 @@ export class Input extends Canvas {
       }
 
       this.ctx.globalCompositeOperation = 'difference';
+
       this.ctx.fillStyle = `hsl(
         0, 0%, ${(Math.random() / 2 + 0.5) * 100}%
       )`;
@@ -70,9 +71,8 @@ export class Input extends Canvas {
       this.ctx.fillRect(0, pos.y, this.width, 1);
 
       this.ctx.globalCompositeOperation = 'source-over';
-      this.ctx.fillStyle = '#fff';
 
-      this.ctx.fillRect(pos.x, pos.y, 1, 1);
+      this.point(Color.WHITE, pos);
     });
   }
 }

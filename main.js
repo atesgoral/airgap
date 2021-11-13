@@ -33,11 +33,13 @@ window.addEventListener('load', async () => {
   const timing = new Timing();
   const calibration = new Calibration();
 
+  status.set('Initializing camera...');
+
   await camera.init();
 
   transmit.enable();
 
-  status.set('READY');
+  status.set('Ready.');
 
   /** @type {Array<{signal: Generator<Color>; isTiming?: boolean; isCalibrating?: boolean}>} */
   let signals = [];
@@ -47,6 +49,7 @@ window.addEventListener('load', async () => {
     if (signals.length) {
       transmit.setTitle('Transmit');
       signals = [];
+      status.set('Stopped.');
       return;
     }
 
@@ -93,7 +96,6 @@ window.addEventListener('load', async () => {
     pixel.stretchImage(camera.canvas);
 
     if (!signals.length) {
-      status.set('READY');
       return;
     }
 
@@ -104,6 +106,11 @@ window.addEventListener('load', async () => {
 
     if (done) {
       signals.shift();
+
+      if (!signals.length) {
+        status.set('Done.');
+      }
+
       return;
     }
 
@@ -111,15 +118,15 @@ window.addEventListener('load', async () => {
     inputGraph.plot(original);
 
     if (isTiming) {
-      status.set('TIMING');
+      status.set('Timing...');
       timing.train(sample);
       outputGraph.plot(sample);
     } else if (isCalibrating) {
-      status.set('CALIBRATING');
+      status.set('Calibrating...');
       calibration.train(sample);
       outputGraph.plot(sample);
     } else if (!timing.wait()) {
-      status.set('TRANSMITTING');
+      status.set('Transmitting...');
       const normalized = calibration.normalize(sample);
       output.render(normalized);
       outputGraph.plot(normalized);

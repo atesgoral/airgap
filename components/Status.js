@@ -1,46 +1,15 @@
-/** @typedef {'LOADING' | 'READY' | 'TIMING' | 'CALIBRATING' | 'TRANSMITTING'} State */
-
 export class Status {
   /**
-   * @param {HTMLPreElement} pre
+   * @param {HTMLDivElement} div
    */
-  constructor(pre) {
-    this.pre = pre;
-    /** @type {State} */
-    this.state = 'LOADING';
-    this.update();
+  constructor(div) {
+    this.div = div;
   }
 
   /**
-   * @param {State} state
+   * @param {string} status
    */
-  set(state) {
-    this.state = state;
-    this.update();
-  }
-
-  /** @private */
-  update() {
-    const lines = [];
-
-    switch (this.state) {
-      case 'LOADING':
-        lines.push('Loading...');
-        break;
-      case 'READY':
-        lines.push('Ready.');
-        break;
-      case 'TIMING':
-        lines.push('Timing...');
-        break;
-      case 'CALIBRATING':
-        lines.push('Calibrating...');
-        break;
-      case 'TRANSMITTING':
-        lines.push('Transmitting...');
-        break;
-    }
-
-    this.pre.innerHTML = lines.join('\n');
+  set(status) {
+    this.div.innerHTML = status;
   }
 }

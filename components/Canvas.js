@@ -1,5 +1,6 @@
-/** @typedef {import('../lib/Color.js').Color} Color */
 /** @typedef {{x: number; y: number}} Point */
+
+import {Color} from '../lib/Color.js';
 
 export class Canvas {
   /**
@@ -49,6 +50,24 @@ export class Canvas {
    */
   fill(color) {
     this.rect(color, {x: 0, y: 0}, this.width, this.height);
+  }
+
+  /**
+   * @param {Point} pos
+   */
+  crosshair(pos) {
+    this.ctx.globalCompositeOperation = 'difference';
+
+    this.ctx.fillStyle = `hsl(
+      0, 0%, ${(Math.random() / 2 + 0.5) * 100}%
+    )`;
+
+    this.ctx.fillRect(pos.x, 0, 1, this.height);
+    this.ctx.fillRect(0, pos.y, this.width, 1);
+
+    this.ctx.globalCompositeOperation = 'source-over';
+
+    this.point(Color.WHITE, pos);
   }
 
   /**

@@ -57,22 +57,9 @@ export class Input extends Canvas {
     return imageSignal(imageData, scanner, (pos) => {
       this.coverImage(image);
 
-      if (!pos) {
-        return;
+      if (pos) {
+        this.crosshair(pos);
       }
-
-      this.ctx.globalCompositeOperation = 'difference';
-
-      this.ctx.fillStyle = `hsl(
-        0, 0%, ${(Math.random() / 2 + 0.5) * 100}%
-      )`;
-
-      this.ctx.fillRect(pos.x, 0, 1, this.height);
-      this.ctx.fillRect(0, pos.y, this.width, 1);
-
-      this.ctx.globalCompositeOperation = 'source-over';
-
-      this.point(Color.WHITE, pos);
     });
   }
 }

@@ -1,6 +1,6 @@
+import {Color} from '../lib/Color.js';
 import {Canvas} from './Canvas.js';
 
-/** @typedef {import('../lib/Color.js').Color} Color */
 /** @typedef {{x: number; y: number}} Point */
 /** @typedef {{scan: (width: number, height: number) => Generator<Point>}} Scanner */
 
@@ -16,6 +16,7 @@ export class Output extends Canvas {
       this.width,
       this.height
     );
+    this.offscreen.fill(Color.BLACK);
   }
 
   /**
@@ -38,10 +39,13 @@ export class Output extends Canvas {
 
     if (done) {
       this.scan = null;
+      this.stretchImage(this.offscreen.canvas);
       return;
     }
 
     this.offscreen.point(color, pos);
     this.stretchImage(this.offscreen.canvas);
+
+    this.crosshair(pos);
   }
 }

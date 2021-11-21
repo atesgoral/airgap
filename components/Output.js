@@ -24,6 +24,7 @@ export class Output extends Canvas {
    */
   init(scanner) {
     this.clear();
+    this.offscreen.clear();
     this.scan = scanner.scan(this.width, this.height);
   }
 

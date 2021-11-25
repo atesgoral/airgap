@@ -24,7 +24,7 @@ export class Output extends Canvas {
    */
   init(scanner) {
     this.clear();
-    this.offscreen.clear();
+    this.offscreen.fill(Color.BLACK);
     this.scan = scanner.scan(this.width, this.height);
   }
 
@@ -33,7 +33,7 @@ export class Output extends Canvas {
    */
   plot(color) {
     if (!this.scan) {
-      return;
+      return false;
     }
 
     const {value: pos, done} = this.scan.next();
@@ -41,12 +41,14 @@ export class Output extends Canvas {
     if (done) {
       this.scan = null;
       this.stretchImage(this.offscreen.canvas);
-      return;
+      return false;
     }
 
     this.offscreen.point(color, pos);
     this.stretchImage(this.offscreen.canvas);
 
     this.crosshair(pos);
+
+    return true;
   }
 }

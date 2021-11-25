@@ -1,6 +1,7 @@
 import {$} from './lib/$.js';
 import {raf} from './lib/raf.js';
 import * as scanners from './lib/scanners.js';
+import {Color} from './lib/Color.js';
 import {Timing} from './lib/Timing.js';
 import {Calibration} from './lib/Calibration.js';
 
@@ -13,10 +14,14 @@ import {Output} from './components/Output.js';
 import {Graph} from './components/Graph.js';
 import {Button} from './components/Button.js';
 
-/** @typedef {import('./lib/Color.js').Color} Color */
-
 // const imageUrl = 'patterns/kodim23.png';
 const imageUrl = 'patterns/Philips_PM5544.svg.png';
+
+function* darkness() {
+  while (true) {
+    yield Color.BLACK;
+  }
+}
 
 window.addEventListener('load', async () => {
   const status = new Status($('#status'));
@@ -66,6 +71,7 @@ window.addEventListener('load', async () => {
       {signal: timing.init(1), isTiming: true},
       {signal: calibration.init(5), isCalibrating: true},
       {signal: await input.init(imageUrl, scanner)},
+      {signal: darkness()},
     ];
 
     transmit.setTitle('Stop');
@@ -95,22 +101,17 @@ window.addEventListener('load', async () => {
     camera.snapshot();
     pixel.stretchImage(camera.canvas);
 
+    const sample = pixel.read();
+
     if (!signals.length) {
       return;
     }
-
-    const sample = pixel.read();
 
     const {signal, isTiming, isCalibrating} = signals[0];
     const {value: original, done} = signal.next();
 
     if (done) {
       signals.shift();
-
-      if (!signals.length) {
-        status.set('Done.');
-      }
-
       return;
     }
 
@@ -119,17 +120,20 @@ window.addEventListener('load', async () => {
 
     if (isTiming) {
       status.set('Timing...');
-      timing.train(sample);
       outputGraph.plot(sample);
+      timing.train(sample);
     } else if (isCalibrating) {
       status.set('Calibrating...');
-      calibration.train(sample);
       outputGraph.plot(sample);
+      calibration.train(sample);
     } else if (!timing.wait()) {
       status.set('Transmitting...');
       const normalized = calibration.normalize(sample);
-      output.plot(normalized);
       outputGraph.plot(normalized);
+      if (!output.plot(normalized)) {
+        signals = [];
+        status.set('Done.');
+      }
     }
   });
 });

@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "start": "serve",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "type-check": "tsc"

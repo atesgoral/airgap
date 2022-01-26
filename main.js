@@ -15,7 +15,8 @@ import {Graph} from './components/Graph.js';
 import {Button} from './components/Button.js';
 
 // const imageUrl = 'patterns/kodim23.png';
-const imageUrl = 'patterns/Philips_PM5544.svg.png';
+// const imageUrl = 'patterns/Philips_PM5544.svg.png';
+const imageUrl = 'patterns/neko.png';
 
 function* darkness() {
   while (true) {

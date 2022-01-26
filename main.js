@@ -53,7 +53,7 @@ window.addEventListener('load', async () => {
 
   transmit.onClick(async () => {
     if (signals.length) {
-      transmit.setTitle('Transmit');
+      // transmit.setTitle('Transmit');
       signals = [];
       status.set('Stopped.');
       return;
@@ -75,7 +75,7 @@ window.addEventListener('load', async () => {
       {signal: darkness()},
     ];
 
-    transmit.setTitle('Stop');
+    // transmit.setTitle('Stop');
     transmit.enable();
   });
 
@@ -90,7 +90,7 @@ window.addEventListener('load', async () => {
 
     isFullscreen = !isFullscreen;
 
-    fullscreen.setTitle(isFullscreen ? 'Exit fullscreen' : 'Fullscreen');
+    // fullscreen.setTitle(isFullscreen ? 'Exit fullscreen' : 'Fullscreen');
 
     fullscreen.enable();
   });

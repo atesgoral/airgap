@@ -9,6 +9,18 @@
     <link rel="stylesheet" href="main.css" />
   </head>
   <body>
+    <div id="splash">
+      <h1>Airgap</h1>
+      <div id="image-picker">
+        <script type="text/html" id="li-template">
+          <li><label><input type="radio" name="source" {checked}><img src="{url}"></label></li>
+        </script>
+        <ul></ul>
+        <form>
+          <input type="file" name="file" id="file" required>
+        </form>      
+      </div>
+    </div>
     <div id="status"></div>
     <canvas id="emitter"></canvas>
     <canvas id="camera"></canvas>

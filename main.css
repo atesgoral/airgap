@@ -8,6 +8,44 @@ body {
   background: #000;
   font-size: 100%;
 }
+#splash {
+  position: absolute;
+  z-index: 1;
+  background: #111;
+  border: 1px solid #888;
+  color: #eee;
+  width: 300px;
+  margin: 0 auto;
+}
+#image-picker ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#image-picker li {
+  margin: 0;
+  padding: 0;
+  display: inline;
+}
+#image-picker input[type=radio] {
+  margin: 0;
+  position: absolute;
+  left: -9999px;
+}
+#image-picker img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 1px solid #888;
+  cursor: pointer;
+}
+#image-picker img:hover {
+  border: 1px solid #ccc;
+}
+#image-picker input:checked + img {
+  border: 1px solid #fff;
+  cursor: default;
+}
 #emitter {
   width: 300px;
   height: 300px;

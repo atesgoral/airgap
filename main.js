@@ -5,6 +5,7 @@ import {Color} from './lib/Color.js';
 import {Timing} from './lib/Timing.js';
 import {Calibration} from './lib/Calibration.js';
 
+import {ImagePicker} from './components/ImagePicker.js';
 import {Status} from './components/Status.js';
 import {Emitter} from './components/Emitter.js';
 import {Camera} from './components/Camera.js';
@@ -14,8 +15,6 @@ import {Output} from './components/Output.js';
 import {Graph} from './components/Graph.js';
 import {Button} from './components/Button.js';
 
-// const imageUrl = 'patterns/kodim23.png';
-// const imageUrl = 'patterns/Philips_PM5544.svg.png';
 const imageUrl = 'patterns/neko.png';
 
 function* darkness() {
@@ -24,7 +23,15 @@ function* darkness() {
   }
 }
 
+const PRESET_URLS = [
+  'patterns/640px-Sweden_TV1_colour_1969.png',
+  'patterns/kodim23.png',
+  'patterns/neko.png',
+  'patterns/Philips_PM5544.svg.png',
+];
+
 window.addEventListener('load', async () => {
+  const imagePicker = new ImagePicker($('#image-picker'), PRESET_URLS);
   const status = new Status($('#status'));
   const emitter = new Emitter($('#emitter'));
   const camera = new Camera($('#camera'));

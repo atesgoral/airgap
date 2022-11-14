@@ -15,8 +15,6 @@ import {Output} from './components/Output.js';
 import {Graph} from './components/Graph.js';
 import {Button} from './components/Button.js';
 
-const imageUrl = 'patterns/neko.png';
-
 function* darkness() {
   while (true) {
     yield Color.BLACK;
@@ -57,6 +55,10 @@ window.addEventListener('load', async () => {
   /** @type {Array<{signal: Generator<Color>; isTiming?: boolean; isCalibrating?: boolean}>} */
   let signals = [];
   let isFullscreen = false;
+
+  let imageUrl = PRESET_URLS[0];
+
+  imagePicker.onSelect((url) => (imageUrl = url));
 
   transmit.onClick(async () => {
     if (signals.length) {

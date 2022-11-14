@@ -15,8 +15,9 @@ body {
   border: 1px solid #888;
   color: #eee;
   width: 300px;
-  margin: 0 auto;
   padding: 10px;
+  left: 200px;
+  top: 10px;
 }
 #image-picker ul {
   list-style: none;

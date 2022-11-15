@@ -72,4 +72,12 @@ export class ImagePicker {
       callback(selectedImg.src);
     });
   }
+
+  hide() {
+    this.div.style.display = 'none';
+  }
+
+  show() {
+    this.div.style.display = 'block';
+  }
 }

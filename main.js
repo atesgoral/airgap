@@ -58,7 +58,10 @@ window.addEventListener('load', async () => {
 
   let imageUrl = PRESET_URLS[0];
 
-  imagePicker.onSelect((url) => (imageUrl = url));
+  imagePicker.onSelect((url) => {
+    imageUrl = url;
+    imagePicker.hide();
+  });
 
   transmit.onClick(async () => {
     if (signals.length) {

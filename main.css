@@ -144,7 +144,7 @@ body {
   left: 10px;
   font-size: 0;
 }
-#buttons > button {
+.button {
   background: #222;
   color: #ccc;
   border: 1px solid #888;
@@ -158,11 +158,11 @@ body {
   height: 30px;
   font-family: monospace;
 }
-#buttons > button[disabled] {
+.button[disabled] {
   opacity: 0.5;
   cursor: wait;
 }
-#buttons > button:not([disabled]):hover {
+.button:not([disabled]):hover {
   color: #eee;
   border-color: #eee;
 }

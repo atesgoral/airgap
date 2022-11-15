@@ -56,14 +56,19 @@ window.addEventListener('load', async () => {
   let signals = [];
   let isFullscreen = false;
 
-  let imageUrl = PRESET_URLS[0];
+  /** @type {HTMLImageElement | null} */
+  let sourceImage = null;
 
-  imagePicker.onSelect((url) => {
-    imageUrl = url;
+  imagePicker.onSelect((image) => {
+    sourceImage = image;
     imagePicker.hide();
   });
 
   transmit.onClick(async () => {
+    if (!sourceImage) {
+      return;
+    }
+
     if (signals.length) {
       // transmit.setTitle('Transmit');
       signals = [];
@@ -83,7 +88,7 @@ window.addEventListener('load', async () => {
     signals = [
       {signal: timing.init(1), isTiming: true},
       {signal: calibration.init(5), isCalibrating: true},
-      {signal: await input.init(imageUrl, scanner)},
+      {signal: input.init(sourceImage, scanner)},
       {signal: darkness()},
     ];
 

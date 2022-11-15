@@ -2,6 +2,9 @@ import {$} from '../lib/$.js';
 import {Button} from './Button.js';
 
 export class ImagePicker {
+  /** @type {string} */
+  liTemplate;
+
   /**
    * @param {HTMLDivElement} div
    * @param {string[]} presetUrls
@@ -17,8 +20,12 @@ export class ImagePicker {
 
     this.ok = new Button($('#ok', div));
 
-    this.ul.addEventListener('change', (event) => {
-      const idx = parseInt(event.srcElement.getAttribute('data-idx'), 10);
+    this.ul.addEventListener('change', (/** @type {Event} */ event) => {
+      const target = /** @type {HTMLInputElement} */ (event.target);
+      const idx = parseInt(
+        /** @type {string} */ (target.getAttribute('data-idx')),
+        10
+      );
       this.selectedIdx = idx;
     });
 
@@ -61,7 +68,7 @@ export class ImagePicker {
   }
 
   /**
-   * @param {(url: string) => void} callback
+   * @param {(image: HTMLImageElement) => void} callback
    */
   onSelect(callback) {
     this.ok.onClick(() => {
@@ -69,7 +76,7 @@ export class ImagePicker {
         `li:nth-child(${this.selectedIdx + 1}) img`,
         this.ul
       );
-      callback(selectedImg.src);
+      callback(selectedImg);
     });
   }
 

@@ -28,28 +28,12 @@ function* imageSignal(imageData, scanner, updatePosition) {
   updatePosition();
 }
 
-/**
- * @param {string} url
- * @returns {Promise<HTMLImageElement>}
- */
-async function loadImage(url) {
-  const image = new Image();
-
-  image.src = url;
-
-  return new Promise((resolve) => {
-    image.onload = () => resolve(image);
-  });
-}
-
 export class Input extends Canvas {
   /**
-   * @param {string} url
+   * @param {HTMLImageElement} image
    * @param {*} scanner
    */
-  async init(url, scanner) {
-    const image = await loadImage(url);
-
+  init(image, scanner) {
     this.coverImage(image);
 
     const imageData = this.ctx.getImageData(0, 0, this.width, this.height);

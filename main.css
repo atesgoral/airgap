@@ -8,6 +8,77 @@ body {
   background: #000;
   font-size: 100%;
 }
+#image-picker {
+  position: absolute;
+  z-index: 1;
+  background: #111;
+  border: 1px solid #888;
+  color: #eee;
+  width: 300px;
+  padding: 10px;
+  left: 200px;
+  top: 10px;
+}
+#image-picker ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#image-picker li {
+  margin: 0;
+  padding: 0;
+  display: inline;
+}
+#image-picker input[type='radio'] {
+  margin: 0;
+  position: absolute;
+  left: -9999px;
+}
+#image-picker img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 1px solid #888;
+  cursor: pointer;
+}
+#image-picker img:hover {
+  border: 1px solid #ccc;
+}
+#image-picker input:checked + img {
+  border: 1px solid #fff;
+  cursor: default;
+}
+#image-picker #upload {
+  position: relative;
+  display: block;
+  width: 100px;
+  height: 100px;
+  border: 1px solid #888;
+  cursor: pointer;
+  text-indent: -9999px;
+}
+#image-picker #upload:after {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  font-size: 300%;
+  font-weight: bold;
+  line-height: 100px;
+  color: #888;
+  text-indent: 0;
+  content: '+';
+}
+#image-picker #upload:hover {
+  border: 1px solid #ccc;
+  color: #ccc;
+}
+#image-picker input[type='file'] {
+  position: absolute;
+  left: -9999px;
+}
 #emitter {
   width: 300px;
   height: 300px;
@@ -73,7 +144,7 @@ body {
   left: 10px;
   font-size: 0;
 }
-#buttons > button {
+.button {
   background: #222;
   color: #ccc;
   border: 1px solid #888;
@@ -87,11 +158,11 @@ body {
   height: 30px;
   font-family: monospace;
 }
-#buttons > button[disabled] {
+.button[disabled] {
   opacity: 0.5;
   cursor: wait;
 }
-#buttons > button:not([disabled]):hover {
+.button:not([disabled]):hover {
   color: #eee;
   border-color: #eee;
 }

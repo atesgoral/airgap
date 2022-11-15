@@ -5,6 +5,7 @@ import {Color} from './lib/Color.js';
 import {Timing} from './lib/Timing.js';
 import {Calibration} from './lib/Calibration.js';
 
+import {ImagePicker} from './components/ImagePicker.js';
 import {Status} from './components/Status.js';
 import {Emitter} from './components/Emitter.js';
 import {Camera} from './components/Camera.js';
@@ -14,17 +15,21 @@ import {Output} from './components/Output.js';
 import {Graph} from './components/Graph.js';
 import {Button} from './components/Button.js';
 
-// const imageUrl = 'patterns/kodim23.png';
-// const imageUrl = 'patterns/Philips_PM5544.svg.png';
-const imageUrl = 'patterns/neko.png';
-
 function* darkness() {
   while (true) {
     yield Color.BLACK;
   }
 }
 
+const PRESET_URLS = [
+  'patterns/640px-Sweden_TV1_colour_1969.png',
+  'patterns/kodim23.png',
+  'patterns/neko.png',
+  'patterns/Philips_PM5544.svg.png',
+];
+
 window.addEventListener('load', async () => {
+  const imagePicker = new ImagePicker($('#image-picker'), PRESET_URLS);
   const status = new Status($('#status'));
   const emitter = new Emitter($('#emitter'));
   const camera = new Camera($('#camera'));
@@ -51,7 +56,19 @@ window.addEventListener('load', async () => {
   let signals = [];
   let isFullscreen = false;
 
+  /** @type {HTMLImageElement | null} */
+  let sourceImage = null;
+
+  imagePicker.onSelect((image) => {
+    sourceImage = image;
+    imagePicker.hide();
+  });
+
   transmit.onClick(async () => {
+    if (!sourceImage) {
+      return;
+    }
+
     if (signals.length) {
       // transmit.setTitle('Transmit');
       signals = [];
@@ -71,7 +88,7 @@ window.addEventListener('load', async () => {
     signals = [
       {signal: timing.init(1), isTiming: true},
       {signal: calibration.init(5), isCalibrating: true},
-      {signal: await input.init(imageUrl, scanner)},
+      {signal: input.init(sourceImage, scanner)},
       {signal: darkness()},
     ];
 

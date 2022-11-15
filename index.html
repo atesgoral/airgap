@@ -9,6 +9,23 @@
     <link rel="stylesheet" href="main.css" />
   </head>
   <body>
+    <div id="image-picker">
+      <script type="text/html" id="li-template">
+        <li>
+          <label>
+            <input type="radio" name="source" {checked} data-idx="{idx}"><img src="{url}">
+          </label>
+        </li>
+      </script>
+      <ul></ul>
+      <form>
+        <label id="upload" title="Upload">
+          Upload
+          <input type="file" name="file" id="file" accept="image/*" />
+        </label>
+      </form>
+      <button type="button" id="ok" class="button">OK</button>
+    </div>
     <div id="status"></div>
     <canvas id="emitter"></canvas>
     <canvas id="camera"></canvas>
@@ -18,8 +35,8 @@
     <canvas id="input-graph" class="graph"></canvas>
     <canvas id="output-graph" class="graph"></canvas>
     <div id="buttons">
-      <button id="transmit" disabled>Transmit</button>
-      <button id="fullscreen">Fullscreen</button>
+      <button id="transmit" class="button" disabled>Transmit</button>
+      <button id="fullscreen" class="button">Fullscreen</button>
     </div>
   </body>
 </html>
